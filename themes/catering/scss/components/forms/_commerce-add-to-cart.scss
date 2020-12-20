@@ -1,0 +1,5 @@
+.commerce-add-to-cart {
+  .form-type-select > label {
+    @extend .sr-only;
+  }
+}

@@ -1,0 +1,47 @@
+.page-checkout {
+
+  .messages.error {
+    @extend .alert;
+    @extend .alert-danger;
+  }
+
+  .checkout-help {
+    @extend .alert;
+    @extend .alert-warning;
+  }
+
+  fieldset.panel {
+    margin-bottom: 2rem;
+
+    legend.panel-heading {
+      background-color: $gray-dark;
+      color: #fff;
+      @extend .font-smoothing-on;
+      margin-bottom: 0;
+    }
+  }
+
+  .checkout-continue {
+    @extend .btn-success;
+  }
+
+  .button-operator {
+    margin: 0 1rem;
+  }
+
+  .checkout-cancel {
+    padding: 0;
+  }
+
+  .help-block {
+    @extend .small;
+  }
+
+  .field {
+    margin-bottom: 2rem;
+
+    .field-label {
+      font-weight: $fw-bold;
+    }
+  }
+}

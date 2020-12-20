@@ -1,0 +1,127 @@
+<?php
+/**
+ * @file
+ * Installation code for the Catering Product Display Entity feature.
+ */
+
+include_once 'catering_product_display_entity.features.inc';
+
+/**
+ * Implements hook_install().
+ */
+function catering_product_display_entity_install() {
+  features_revert_module('catering_product_display_entity');
+
+  // Add the default order form sections.
+  $new_terms = array(
+    "Beverages",
+    "Bakery",
+    "Box Lunches",
+    "Hors D'Oeuvres",
+    "Buffet Service",
+    'Meal Service',
+    'Dessert',
+    'Snacks',
+  );
+
+  // Load the vocabulary ID.
+  $vid = taxonomy_vocabulary_machine_name_load('student_org_commerce_sections')->vid;
+
+  // Create new terms from the $new_terms array.
+  foreach ($new_terms as $item) {
+    $new_term = new stdClass();
+    $new_term->name = $item;
+    $new_term->vid = $vid;
+    taxonomy_term_save($new_term);
+  }
+}
+
+/**
+ * Set product display permissions.
+ */
+function catering_product_display_entity_update_7100() {
+
+  $editor = user_role_load_by_name('editor');
+
+  $webmaster = user_role_load_by_name('webmaster');
+
+  $perms = array(
+    'create product_display content',
+    'edit any product_display content',
+    'delete any product_display content',
+    'view any commerce_order entity',
+    'edit any commerce_order entity',
+    'create commerce_product entities',
+    'view any commerce_product entity',
+    'edit any commerce_product entity',
+  );
+
+  // Grant editors product display permissions.
+  user_role_grant_permissions($editor->rid, $perms);
+
+  // Grant webmasters product display permissions.
+  user_role_grant_permissions($webmaster->rid, $perms);
+}
+
+/**
+ * Setup order manager role.
+ */
+function catering_product_display_entity_update_7101() {
+
+  $roles = array(
+    'administrator',
+    'webmaster',
+    'editor'
+  );
+
+  foreach ($roles as $key => $value) {
+    $role = user_role_load_by_name($value);
+    $role->weight = $role->weight++;
+    user_role_save($role);
+  }
+
+  // Create order manager role.
+  $role = new stdClass();
+  $role->name = "order manager";
+  $role->weight = 2;
+
+  user_role_save($role);
+
+  $order_manager = user_role_load_by_name('order manager');
+
+  $perms = array(
+    'access administration pages',
+    'access ckeditor link',
+    'access content overview',
+    'access media browser',
+    'access toolbar',
+    'add media from remote sources',
+    'bypass rh_node',
+    'create commerce_product entities',
+    'create files',
+    'create product_display content',
+    'create url aliases',
+    'delete any document files',
+    'delete any image files',
+    'delete any product_display content',
+    'delete revisions',
+    'delete terms in 21',
+    'edit any commerce_order entity',
+    'edit any commerce_product entity',
+    'edit any document files',
+    'edit any image files',
+    'edit any product_display content',
+    'edit terms in 21',
+    'revert revisions',
+    'use media wysiwyg',
+    'use text format filtered_html',
+    'use text format minimal',
+    'view any commerce_order entity',
+    'view any commerce_product entity',
+    'view revisions',
+    'view the administration theme',
+  );
+
+  // Grant order manager necessary permissions.
+  user_role_grant_permissions($order_manager->rid, $perms);
+}

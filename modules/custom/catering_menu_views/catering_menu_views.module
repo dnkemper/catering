@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Catering Menu Views feature.
+ */
+
+include_once 'catering_menu_views.features.inc';

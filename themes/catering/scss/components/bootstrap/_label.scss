@@ -1,0 +1,9 @@
+.label-default,
+.label,
+.label-primary,
+.label-success,
+.label-info,
+.label-warning,
+.label-danger {
+  @extend .font-smoothing-on;
+}

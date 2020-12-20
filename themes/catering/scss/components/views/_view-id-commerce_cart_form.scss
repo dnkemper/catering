@@ -1,0 +1,13 @@
+.view-id-commerce_cart_form {
+  .form-group {
+    margin-bottom: 0;
+  }
+
+  .views-field-edit-delete {
+    width: 86px;
+
+    .delete-line-item {
+      @extend .btn-danger;
+    }
+  }
+}

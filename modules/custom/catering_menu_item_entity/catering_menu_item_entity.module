@@ -1,0 +1,81 @@
+<?php
+/**
+ * @file
+ * Code for the Catering Menu Item Entity feature.
+ */
+
+include_once 'catering_menu_item_entity.features.inc';
+
+/**
+* Implements hook_entity_info_alter().
+*/
+function catering_menu_item_entity_entity_info_alter(&$entity_info) {
+  // Create a new node view_mode for buffets.
+  $entity_info['node']['view modes']['buffet_teaser'] = array(
+    'label' => t('Buffet teaser'),
+    'custom settings' => TRUE,
+  );
+  // Create a new term view_mode for dietary_indicators.
+  $entity_info['taxonomy_term']['view modes']['indicator'] = array(
+    'label' => t('Indicator'),
+    'custom settings' => TRUE,
+  );
+}
+
+/**
+ * Implements hook_inline_entity_form_entity_form_alter().
+ */
+function catering_menu_item_entity_inline_entity_form_entity_form_alter(&$entity_form, &$form_state) {
+  // Hide the cost field if the parent is buffet_items.
+  if (in_array('field_buffet_menu_items', $entity_form['#parents'], TRUE)) {
+    hide($entity_form['field_menu_item_cost']);
+  }
+}
+
+/**
+ * Implements hook_colors_rebuild().
+ */
+function catering_menu_item_entity_colors_rebuild() {
+  return TRUE;
+}
+
+/**
+ * Implements hook_colors_build_selector().
+ */
+function catering_menu_item_entity_colors_build_selector($class) {
+  $selector = array(
+    ".$class",
+  );
+  return implode(', ', $selector);
+}
+
+/**
+ * Implements hook_preprocess_taxonomy_term().
+ */
+function catering_menu_item_entity_preprocess_taxonomy_term(&$vars) {
+  if (module_exists('colors')) {
+    $css_url = file_create_url(colors_create_css('catering_menu_item_entity'));
+    drupal_add_css($css_url);
+    $vars['classes_array'] = array(
+      'dietary-indicator',
+      'colors-taxonomy-term-' . $vars['tid'],
+    );
+  }
+}
+
+/**
+ * Implements hook_form_FORMID_alter().
+ */
+function catering_menu_item_entity_form_taxonomy_form_term_alter(&$form, &$form_state, $form_id) {
+  // Hide the description for event_types.
+  if ($form['#vocabulary']->machine_name == 'dietary_indicators') {
+    hide($form['description']);
+    drupal_set_message(t('@name color indicator can be set using !link.',
+      array(
+        '@name' => $form['name']['#default_value'],
+        '!link' => l('Colors', 'admin/config/user-interface/colors/taxonomy'),
+      )),
+      'warning'
+    );
+  }
+}

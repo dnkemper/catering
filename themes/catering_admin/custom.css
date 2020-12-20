@@ -1,0 +1,60 @@
+body.adminimal-theme * {
+  box-sizing: border-box;
+}
+
+/* Remove yellow hover on content blocks */
+.adminimal-theme tr.draggable.even:hover {
+  background: #f3f4ee;
+}
+.adminimal-theme tr.draggable.odd:hover {
+  background: #ffffff;
+}
+.adminimal-theme .field-type-paragraphs tr.even td,
+.adminimal-theme .field-type-paragraphs tr.odd td {
+  background-color: #fff;
+}
+.adminimal-theme div[id*='-paragraph-bundle-title'] {
+  background-color: #00A1C6;
+  color: white;
+  padding: 1rem;
+  font-weight: bold;
+}
+
+.adminimal-theme .field-type-paragraphs tr.draggable.even td.field-multiple-drag,
+.adminimal-theme .field-type-paragraphs tr.draggable.odd td.field-multiple-drag {
+  background-color: #56565A;
+}
+.adminimal-theme .field-type-paragraphs table.field-multiple-table {
+  border-spacing: 18px;
+  border-collapse: separate;
+}
+.adminimal-theme .field-type-paragraphs td.field-multiple-drag {
+  padding: 10px;
+}
+.adminimal-theme .draggable a.tabledrag-handle {
+  margin: 0;
+}
+.adminimal-theme .field-type-paragraphs > .field-label {
+  background-color: #eee;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Webforms */
+.page-node-webform-results.adminimal-theme table th {
+  font-size: 12px;
+  min-width: 100px;
+}
+.adminimal-theme ul.secondary {
+  padding-left: 1rem;
+}
+.adminimal-theme table tr, .adminimal-theme table th {
+  border-bottom: 1px solid #eeeeee;
+}
+.adminimal-theme .webform-submission-info, .adminimal-theme .webform-submission-actions {
+  padding: 1rem;
+}
+.adminimal-theme .webform-submission-next {
+  padding: 0.5em;
+  border: 1px solid #eeeeee;
+}

@@ -1,0 +1,47 @@
+.node--menu_item--teaser {
+  margin-bottom: 2rem;
+
+  .menu-item-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: $fw-bold;
+  }
+
+  .menu-item-title {
+    text-transform: uppercase;
+  }
+
+  .field-name-field-dietary-indicators {
+    display: inline-block;
+
+    .dietary-indicator {
+      @extend .font-smoothing-on;
+      @extend .small;
+      margin-left: 0.3rem;
+      padding: 0 0.5rem 0.1rem;
+      border-radius: 5px;
+      font-style: italic;
+      position: relative;
+      top: -2px;
+    }
+  }
+
+  .menu-item-leader {
+    flex: 1px 1 1;
+    margin: 0 0.5rem;
+    background-image: radial-gradient(circle closest-side,#ccc 99%,rgba(0,0,0,0) 1%);
+    background-repeat: repeat-x;
+    background-position: bottom;
+    background-size: 6px 2px;
+    position: relative;
+    top: -4px;
+  }
+
+  .field-name-field-menu-item-description {
+    color: #666;
+    @extend .small;
+    font-style: italic;
+    margin-left: 2.5rem;
+    max-width: 75%;
+  }
+}

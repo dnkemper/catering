@@ -1,0 +1,33 @@
+.main-header-bg {
+  padding: 2rem 0;
+
+  &.has_bg_img {
+    border-bottom: 4px solid $brand-yellow;
+    min-height: 50vmin;
+    display: flex;
+    align-items: flex-end;
+    padding: 0;
+
+    .breadcrumb-title-container {
+      flex: 100% 1 1;
+      background-image: linear-gradient(to right, rgba(255,255,255,0.75) 35%, transparent 60%);
+      padding: 2rem 0 1rem;
+    }
+  }
+
+  .breadcrumbs {
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    color: $headings-color;
+
+    a {
+      color: $headings-color;
+    }
+  }
+
+  .page-title {
+    margin: 0;
+    font-weight: $fw-bold;
+    letter-spacing: -1px;
+  }
+}

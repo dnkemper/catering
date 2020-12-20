@@ -1,0 +1,5 @@
+settings.php
+.DS_Store
+files
+themes/catering/.sass-cache/
+settings.local.php

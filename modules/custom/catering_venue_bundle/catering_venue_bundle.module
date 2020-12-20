@@ -1,0 +1,156 @@
+<?php
+
+/**
+ * @file
+ * Code for the Catering Venue Bundle feature.
+ */
+
+include_once 'catering_venue_bundle.features.inc';
+
+/**
+ * Implements hook_preprocess_page().
+ */
+function catering_venue_bundle_preprocess_page(&$vars) {
+  if ($node = menu_get_object()) {
+    if ($node->type == 'venue') {
+      $breadcrumbs = drupal_get_breadcrumb();
+      $breadcrumbs[] = l('Venues', 'venues');
+      drupal_set_breadcrumb($breadcrumbs);
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function catering_venue_bundle_form_venue_node_form_alter(&$form, &$form_state, $form_id) {
+  // Add chosen.js library to venue node edit form.
+  if (($library = libraries_detect('chosen')) && !empty($library['installed'])) {
+    libraries_load('chosen');
+    $form['#attached']['libraries_load'][] = array('chosen');
+    $form['#attached']['js'] = array(
+      drupal_get_path('module', 'catering_venue_bundle') . '/js/chosen.jquery.js',
+    );
+  }
+
+  $form['field_venue_address']['#states'] = array(
+    'visible' => array(
+      ':input[name="field_venue_building[und][0][sitenow_map][value]"]' => array(
+        'value' => '',
+      ),
+    ),
+  );
+
+  $form['#validate'][] = 'catering_venue_bundle_address_validate';
+}
+
+/**
+ * Address field validation.
+ */
+function catering_venue_bundle_address_validate($form, &$form_state) {
+  if (!empty($form_state['values']['field_venue_building'])) {
+    $form_state['values']['field_venue_address'][LANGUAGE_NONE][0]['country'] = '';
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function catering_venue_bundle_form_alter(&$form, &$form_state) {
+  // Override bootstrap dropdown so that exposed filters stay open when clicked.
+  if (isset($form['#id']) && $form['#id'] == 'views-exposed-form-venues-venues-bef') {
+    $form['#attached']['js'][] = drupal_get_path('module', 'catering_venue_bundle') . '/js/dropdown.jquery.js';
+  }
+}
+
+/**
+ * Implements hook_field_extra_fields().
+ */
+function catering_venue_bundle_field_extra_fields() {
+  $extra['node']['venue']['display']['contact_combined'] = array(
+    'label' => t('Contact Combined'),
+    'description' => t('Combined contact name, email and phone.'),
+    'weight' => 99,
+    );
+
+  $extra['node']['venue']['display']['get_started'] = array(
+    'label' => t('Get Started'),
+    'description' => t('Link to contact form.'),
+    'weight' => 100,
+  );
+
+  return $extra;
+}
+
+/**
+ * Implements hook_node_view().
+ */
+function catering_venue_bundle_node_view($node, $view_mode, $langcode) {
+  // Get extra field info from hook_field_extra_fields().
+  $extra = catering_venue_bundle_field_extra_fields();
+
+  // Check that we're supporting the node type being viewed.
+  if (empty($extra['node'][$node->type]['display'])) {
+    return;
+  }
+
+  $config = field_bundle_settings('node', $node->type);
+  foreach ($extra['node'][$node->type]['display'] as $field_name => $field_info) {
+    // Check to make sure this field is visible in this view mode.
+    if (empty($config['extra_fields']['display'][$field_name][$view_mode]['visible'])) {
+      continue;
+    }
+
+    switch ($field_name) {
+      case 'contact_combined':
+
+        $node->content[$field_name] = array(
+          '#title' => t('Contact:'),
+          '#pseudo_field' => TRUE,
+        );
+
+        $items = field_get_items('node', $node, 'field_venue_contact');
+
+        if ($items) {
+          $node->content[$field_name][0] = field_view_value('node', $node, 'field_venue_contact', $items[0]);
+        }
+
+        $items = field_get_items('node', $node, 'field_venue_contact_telephone');
+
+        if ($items) {
+          $node->content[$field_name][1] = field_view_value('node', $node, 'field_venue_contact_telephone', $items[0]);
+        }
+
+        $items = field_get_items('node', $node, 'field_venue_contact_email');
+
+        if ($items) {
+          $node->content[$field_name][2] = field_view_value('node', $node, 'field_venue_contact_email', $items[0]);
+        }
+
+        break;
+
+      case 'get_started':
+
+        $node->content[$field_name] = array(
+          '#title' => t('Get Started'),
+          '#pseudo_field' => TRUE,
+          '#label_display' => 'hidden',
+          'content' => array(
+            '#type' => 'link',
+            '#title' => t('Get Started'),
+            '#href' => 'contact',
+            '#options' => array(
+              'attributes' => array(
+                'class' => array('btn btn-primary btn-large'),
+              ),
+              'query' => array(
+                'venue' => $node->nid,
+              ),
+            ),
+          ),
+        );
+
+        break;
+    }
+  }
+}

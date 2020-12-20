@@ -1,0 +1,59 @@
+.paragraphs-items-field-buffet-menu-section {
+  .panel-default {
+    border: none;
+  }
+  .field-name-field-menu-buttet-name {
+    background-color: black;
+  }
+  .field-name-field-buffet-menu-section {
+    @include breakpoint(md) {
+      display: flex;
+      flex-wrap: wrap;
+      margin: 0 -1.5rem;
+    }
+  }
+
+  .field-name-field-menu-item-cost {
+    @extend .clearfix;
+    text-align: center;
+
+    > div {
+      display: inline-block;
+      margin-bottom: 0.5rem;
+      padding-bottom: 0.5rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+  }
+
+  .single-set .field-name-field-buffet-menu-label {
+    @extend %tab-style-sm;
+    text-align: center;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #ccc;
+    color: $color-highlight;
+  }
+
+  .paragraphs-item-catering-buffet-items {
+    margin-bottom: 2rem;
+    @include breakpoint(md) {
+      flex-grow: 0;
+      flex-shrink: 0;
+      flex-basis: calc((50% - 3rem) - 2px);
+      margin: 0 1.5rem 3rem;
+    }
+  }
+
+  .field-name-field-buffet-image {
+    img {
+      width: 100%;
+      object-fit: cover;
+      object-position: center;
+
+      .object-fit & {
+        max-height: 200px;
+      }
+    }
+  }
+}

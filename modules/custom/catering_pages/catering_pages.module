@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Catering Pages feature.
+ */
+
+include_once 'catering_pages.features.inc';

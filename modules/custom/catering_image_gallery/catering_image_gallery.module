@@ -1,0 +1,8 @@
+<?php
+
+/**
+ * @file
+ * Code for the Catering Paragraphs Image Gallery feature.
+ */
+
+include_once 'catering_image_gallery.features.inc';

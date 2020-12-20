@@ -1,0 +1,655 @@
+<?php
+/**
+ * @file
+ * Code for the Catering Core module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function catering_core_install() {
+  // Radix requires jquery 1.7+.
+  module_enable(array('jquery_update'));
+
+  // Enable and set default the new theme.
+  theme_enable(array('catering'));
+  variable_set('theme_default', 'catering');
+
+  // Set default pathauto pattern.
+  variable_set('pathauto_node_pattern', '[node:menu-link:parents:join-path]/[node:title]');
+
+  // Delete the article content type.
+  node_type_delete('article');
+
+  drupal_flush_all_caches();
+}
+
+/**
+ * Enable catering menus-related modules.
+ */
+function catering_core_update_7100() {
+  module_enable(array('catering_common', 'catering_menu_entity', 'catering_permissions'));
+}
+
+/**
+ * Enable webform module.
+ */
+function catering_core_update_7101() {
+  module_enable(array('webform'));
+  features_revert_module('catering_permissions');
+}
+
+/**
+ * Enable catering_planning_block.
+ */
+function catering_core_update_7102() {
+  module_enable(array('catering_planning_block'));
+}
+
+/**
+ * Enable catering_pages and set homepage var.
+ */
+function catering_core_update_7103() {
+  module_enable(array('catering_pages'));
+  variable_set('site_frontpage', 'home');
+}
+
+/**
+ * Add footer menu and configure access.
+ */
+function catering_core_update_7104() {
+  module_enable(array('catering_page_entity', 'menu_admin_per_menu', 'hs_menu', 'menu_link_weight'));
+  features_revert_module('catering_common');
+  features_revert_module('catering_permissions');
+
+  drupal_flush_all_caches();
+
+  // Add main menu block (for now).
+  db_update('block')
+    ->fields(array(
+        'status' => 1,
+        'region' => 'main_nav',
+        'title' => '<none>'
+      )
+    )
+    ->condition('module', 'system')
+    ->condition('delta', 'main-menu')
+    ->condition('theme', 'catering')
+    ->execute();
+
+  // Add footer block into footer.
+  db_update('block')
+    ->fields(array(
+        'status' => 1,
+        'region' => 'footer',
+        'title' => '<none>'
+      )
+    )
+    ->condition('module', 'menu')
+    ->condition('delta', 'menu-footer')
+    ->condition('theme', 'catering')
+    ->execute();
+}
+
+/**
+ * Add new admin theme.
+ */
+function catering_core_update_7105() {
+  theme_enable(array('adminimal', 'catering_admin'));
+
+  variable_set('admin_theme', 'catering_admin');
+}
+
+/**
+ * Disable search_autocomplete default forms.
+ */
+function catering_core_update_7106() {
+  $result = db_query("SELECT fid, title, enabled FROM {search_autocomplete_forms}");
+  $result = $result->fetchAllAssoc('fid');
+  foreach ($result as $id => $record) {
+    if ($record->title != 'Event Types') {
+      // Update the value in the database.
+      db_update('search_autocomplete_forms')
+        ->fields(array('enabled' => 0))
+        ->condition('fid', $id)
+        ->execute();
+    }
+  }
+}
+
+/**
+ * Add landing pages.
+ */
+function catering_core_update_7107() {
+  module_enable(array('catering_landing_page_entity'));
+  features_revert_module('catering_paragraphs');
+}
+
+/**
+ * Remove deprecated paragraph bundle.
+ */
+function catering_core_update_7108() {
+  paragraphs_bundle_delete('catering_two_col');
+}
+
+/**
+ * Enable focal_point module
+ */
+function catering_core_update_7109() {
+  module_enable(array('focal_point'));
+}
+
+/**
+ * Remove field_menu_heading_prefix field.
+ */
+function catering_core_update_7110() {
+  features_revert_module('catering_paragraphs');
+  field_delete_field('field_menu_heading_prefix');
+  field_purge_batch(10);
+}
+
+/**
+ * Enable and revert venue features.
+ */
+function catering_core_update_7111() {
+  module_enable(array('catering_venue_bundle', 'catering_venue_views'));
+  features_revert_module('catering_pages');
+}
+
+/**
+ * Deleted.
+ */
+function catering_core_update_7112() {}
+
+/**
+ * Revert catering_pages and catering_paragraphs.
+ */
+function catering_core_update_7113() {
+  features_revert_module('catering_pages');
+  features_revert_module('catering_paragraphs');
+}
+
+/**
+ * Delete venue_image field.
+ */
+function catering_core_update_7114() {
+  // Revert the catering_venue_bundle feature.
+  features_revert_module('catering_venue_bundle');
+  // Delete the field_venue_image field.
+  field_delete_field('field_venue_image');
+  field_purge_batch(10);
+}
+
+/**
+ * Enable field_group.
+ */
+function catering_core_update_7115() {
+  module_enable(array('field_group'));
+}
+
+/**
+ * Delete column fields and paragraphs.
+ */
+function catering_core_update_7116() {
+  // Revert feature.
+  features_revert_module('catering_paragraphs');
+  // Delete fields.
+  field_delete_field('field_2col_first_column');
+  field_delete_field('field_2col_second_column');
+  field_delete_field('field_2col_third_column');
+  field_purge_batch(10);
+  // Delete paragraph bundles.
+  paragraphs_bundle_delete('catering_three_col_landing');
+  paragraphs_bundle_delete('catering_two_col_landing');
+  paragraphs_bundle_delete('catering_two_col_menu');
+}
+
+/**
+ * Enable fancybox.
+ */
+function catering_core_update_7117() {
+  module_enable(array('fancybox', 'catering_example_entity'));
+}
+
+/**
+ * Add student org ordering form.
+ */
+function catering_core_update_7118() {
+  module_enable(array('catering_commerce', 'catering_product_display_entity', 'catering_commerce_views'));
+  features_revert_module('catering_commerce_product_types');
+}
+
+/**
+ * Hide some entities.
+ */
+function catering_core_update_7119() {
+
+  module_disable(array('catering_permissions'));
+
+  drupal_uninstall_modules(array('catering_permissions'));
+
+  module_enable(array('rh_node', 'rh_taxonomy', 'xmlsitemap_node'));
+
+  $editor = user_role_load_by_name('editor');
+
+  $webmaster = user_role_load_by_name('webmaster');
+
+  // Grant editors the access checkout permission.
+  user_role_grant_permissions($editor->rid, array('bypass rh_node'));
+  // Grant Authenticated users the access checkout permission.
+  user_role_grant_permissions($webmaster->rid, array('bypass rh_node'));
+}
+
+/**
+ * Delete field_card_section_title.
+ */
+function catering_core_update_7120() {
+  // Revert feature.
+  features_revert_module('catering_paragraphs');
+  // Delete fields.
+  field_delete_field('field_card_section_title');
+  field_purge_batch(10);
+}
+
+/**
+ * Enable webform bundle feature.
+ */
+function catering_core_update_7121() {
+  module_enable(array('catering_webform_bundle'));
+  features_revert_module('catering_webform_bundle');
+}
+
+/**
+ * Generate contact form.
+ */
+function catering_core_update_7122() {
+  catering_webform_bundle_generate_contact_form();
+}
+
+/**
+ * Enable bootstrap_fieldgroup.
+ */
+function catering_core_update_7123() {
+  module_enable(array('bootstrap_fieldgroup', 'webform_bt_layout'));
+}
+
+/**
+ * Enable superfish and place block and replace system main-menu.
+ */
+function catering_core_update_7124() {
+  // Enable superfish module.
+  module_enable(array('superfish'));
+  // Enable and set superfish block.
+  db_update('block')
+    ->fields(array(
+      'status' => 1,
+      'region' => 'main_nav',
+      'weight' => 0,
+    ))
+    ->condition('module', 'superfish')
+    ->condition('delta', '1')
+    ->condition('theme', 'catering')
+    ->execute();
+
+  // Disable system main-menu block.
+  db_update('block')
+    ->fields(array(
+      'status' => 0,
+      'region' => 'content',
+      'weight' => 0,
+    ))
+    ->condition('module', 'system')
+    ->condition('delta', 'main-menu')
+    ->condition('theme', 'catering')
+    ->execute();
+}
+
+/**
+ * Enable slick.
+ */
+function catering_core_update_7125() {
+  module_enable(array('slick'));
+}
+
+/**
+ * Replace menu basic page with view.
+ */
+function catering_core_update_7126() {
+  node_delete(16);
+  module_enable(array('catering_menu_views'));
+  drupal_flush_all_caches();
+  // Set menus_page views menu link.
+  $item = array(
+    'link_path' => drupal_get_normal_path('menus'),
+    'link_title' => 'Menus',
+    'menu_name' => 'main-menu',
+    'weight' => -45,
+  );
+  $menus_mlid = menu_link_save($item);
+  // Set dinner menu link.
+  $dinner_link = menu_link_load(2466);
+  $dinner_link['plid'] = $menus_mlid;
+  menu_link_save($dinner_link);
+}
+
+/**
+ * Create homepage node.
+ */
+function catering_core_update_7127() {
+  // Create homepage landing_page node.
+  $node = new stdClass();
+  $node->title = "Home";
+  $node->type = "landing_page";
+  node_object_prepare($node);
+  $node->language = LANGUAGE_NONE;
+  $node->uid = $user->uid;
+  $node->status = 1;
+  node_save($node);
+  // Set the node to be the homepage.
+  variable_set('site_frontpage', 'node/' . $node->nid);
+  // Place the planning block.
+  db_update('block')
+    ->fields(array(
+      'status' => 1,
+      'region' => 'content',
+      'weight' => -50,
+      'visibility' => 1,
+      'pages' => '<front>',
+    ))
+    ->condition('module', 'catering_planning_block')
+    ->condition('delta', 'event_planning')
+    ->condition('theme', 'catering')
+    ->execute();
+}
+
+/**
+ * Create dietary_indicator terms.
+ */
+function catering_core_update_7128() {
+  // Feature revert.
+  features_revert_module('catering_menu_item_entity');
+  $items = array(
+    'Vegan' => 'v',
+    'Vegetarian' => 'vg',
+  );
+  // Add terms.
+  $vocabulary = 'dietary_indicators';
+  $vid = taxonomy_vocabulary_machine_name_load($vocabulary)->vid;
+  foreach ($items as $name => $code) {
+    $new_term = new stdClass();
+    $new_term->name = $name;
+    $new_term->vid = $vid;
+    $new_term->field_indicator_code[LANGUAGE_NONE][0]['value'] = $code;
+    taxonomy_term_save($new_term);
+  }
+}
+
+/**
+ * Enbale the colors module.
+ */
+function catering_core_update_7129() {
+  module_enable(array('colors'));
+}
+
+/**
+ * Update alias for venues.
+ */
+function catering_core_update_7130() {
+  // Update the pattern for venue nodes.
+  variable_set('pathauto_node_venue_pattern', 'venues/[node:title]');
+  // Get venue nodes.
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'node')
+    ->entityCondition('bundle', 'venue');
+
+  $result = $query->execute();
+
+  if (isset($result['node'])) {
+    $keys = array_keys($result['node']);
+    $items = entity_load('node', $keys);
+    foreach ($items as $node) {
+      pathauto_node_update_alias($node, 'update');
+    }
+  }
+}
+
+/**
+ * UHD footer enable and config.
+ */
+function catering_core_update_7131() {
+  // Enable uhd_footer.
+  module_enable(array('uhd_footer'));
+  // Create social media menu.
+  $menu = array();
+  $menu['menu_name'] = "menu-social-media";
+  $menu['title'] = "Social Media";
+  $menu['description'] = "<em>Social Media</em> menu links";
+  menu_save($menu);
+  // Set vars.
+  variable_set('uhd_footer_custom_menu', 'menu-footer');
+  variable_set('uhd_footer_social_media_menu', 'menu-social-media');
+  $contact_us = array(
+    'value' => '<p>Contact info goes here.</p>',
+    'format' => 'filtered_html',
+  );
+  variable_set('uhd_footer_contact_us', $contact_us);
+}
+
+/**
+ * Disable menu-footer block.
+ */
+function catering_core_update_7132() {
+  // Disable menu-footer block.
+  db_update('block')
+    ->fields(array(
+      'status' => 0,
+      'region' => -1,
+      'weight' => 0,
+    ))
+    ->condition('module', 'menu')
+    ->condition('delta', 'menu-footer')
+    ->condition('theme', 'catering')
+    ->execute();
+}
+
+/**
+ * Enable contextual links.
+ */
+function catering_core_update_7133() {
+  module_enable(array('contextual'), FALSE);
+
+  // Grant Authenticated users the access contextual links.
+  user_role_grant_permissions(DRUPAL_AUTHENTICATED_RID, array('access contextual links'));
+}
+
+/**
+ * Convert menus views_page to landing page.
+ */
+function catering_core_update_7134() {
+  features_revert_module('catering_menu_views');
+  // Create menu landing_page node.
+  $node = new stdClass();
+  $node->title = "Menus";
+  $node->type = "landing_page";
+  node_object_prepare($node);
+  $node->language = LANGUAGE_NONE;
+  $node->uid = $user->uid;
+  $node->status = 1;
+  node_save($node);
+
+  // Set menus_page views menu link.
+  $item = array(
+    'link_path' => 'node/' . $node->nid,
+    'link_title' => 'Menus',
+    'menu_name' => 'main-menu',
+    'weight' => -46,
+  );
+  $menus_mlid = menu_link_save($item);
+  $menu_children = array(
+    '9741',
+    '9736',
+    '9751',
+    '2466',
+    '9756',
+    '9761',
+  );
+  foreach ($menu_children as $mlid) {
+    $link = menu_link_load($mlid);
+    $link['plid'] = $menus_mlid;
+    menu_link_save($link);
+  }
+}
+
+/**
+ * Enable commerce_fees.
+ */
+function catering_core_update_7135() {
+  features_revert_module('catering_commerce_views');
+  module_enable(array('commerce_fees'), FALSE);
+  // Create a new fee.
+  $service_fee = commerce_fees_new();
+  $service_fee['name'] = 'service_fee';
+  $service_fee['title'] = 'Service Fee';
+  $service_fee['display_title'] = '20% Service Fee';
+  // Save fee.
+  commerce_fees_save($sdervice_fee, TRUE);
+}
+
+/**
+ * Enable sitenow paragraphs and all submodules.
+ */
+function catering_core_update_7136() {
+  module_enable(array(
+    'sitenow_paragraphs',
+    'snp_accordion',
+    'snp_image_gallery',
+    'snp_accordion_item',
+    'snp_block',
+    'snp_card',
+    'snp_cards',
+    'snp_map',
+    'snp_map_mp',
+    'snp_section',
+    'snp_textarea',
+  ));
+}
+
+function catering_core_update_7137() {
+  module_enable(array('catering_person'));
+}
+
+function catering_core_update_7138() {
+  /**
+ * Set allowed bundles for SNP section content blocks.
+ */
+
+  $instance_info = field_info_instance('paragraphs_item', 'field_snp_section_content_blocks', 'snp_section');
+
+  $instance_info['settings']['allowed_bundles'] = array(
+    'snp_cards' => 'snp_cards',
+    'snp_accordion' => 'snp_accordion',
+    'snp_image_gallery' => 'snp_image_gallery',
+    'person_grid' => 'person_grid',
+  );
+
+  field_update_instance($instance_info);
+}
+
+/**
+ * Update person paragraph bundle.
+ */
+function catering_core_update_7139() {
+  features_revert_module('catering_paragraphs');
+}
+
+function catering_core_update_7140() {
+  /**
+ * Set allowed bundles for SNP section content blocks.
+ */
+
+  $instance_info = field_info_instance('paragraphs_item', 'field_snp_section_content_blocks', 'snp_section');
+
+  $instance_info['settings']['allowed_bundles'] = array(
+    'snp_cards' => 'snp_cards',
+    'snp_accordion' => 'snp_accordion',
+    'snp_image_gallery' => 'snp_image_gallery',
+    'person_grid' => 'person_grid',
+  );
+
+  field_update_instance($instance_info);
+}
+
+function catering_core_update_7141() {
+  module_enable(array('snp_accordion_menu'));
+}
+
+function catering_core_update_7142() {
+  /**
+ * Set allowed bundles for SNP section content blocks.
+ */
+
+  $instance_info = field_info_instance('paragraphs_item', 'field_snp_section_content_blocks', 'snp_section');
+
+  $instance_info['settings']['allowed_bundles'] = array(
+    'snp_cards' => 'snp_cards',
+    'snp_accordion' => 'snp_accordion',
+    'snp_image_gallery' => 'snp_image_gallery',
+    'person_grid' => 'person_grid',
+    'snp_accordion_menu' => 'snp_accordion_menu',
+  );
+
+  field_update_instance($instance_info);
+}
+function catering_core_update_7143() {
+
+  // Delete product list field instance, base if last instance.
+  if ($instance = field_info_instance('paragraphs_item', 'field_menu_items', 'catering_menu_section')) {
+    field_delete_instance($instance);
+  }
+
+  // Set the batch size to a high number.
+  field_purge_batch(1000);
+
+  // Clear all caches.
+  drupal_flush_all_caches();
+}
+
+/**
+ * Enable redirect module.
+ */
+function catering_core_update_7144() {
+  module_enable(array('redirect'));
+}
+
+/**
+ * Enable redirect module.
+ */
+function catering_core_update_7145() {
+  module_disable(array('uhd_footer'));
+}
+
+/**
+ * Enable and configure catering_footer module.
+ */
+function catering_core_update_7146() {
+  module_enable(array('catering_footer', 'fontawesome_menu'));
+
+  // Create social media menu.
+  $menu = array();
+  $menu['menu_name'] = "menu-social-media";
+  $menu['title'] = "Social Media";
+  $menu['description'] = "<em>Social Media</em> menu links";
+  menu_save($menu);
+
+  // Create footer menu.
+  $menu = array();
+  $menu['menu_name'] = "menu-footer";
+  $menu['title'] = "Footer";
+  $menu['description'] = "The <em>footer menu</em> is used for secondary links, shown in the footer area of the site.";
+  menu_save($menu);
+
+  // Set vars.
+  variable_set('catering_footer_custom_menu', 'menu-footer');
+  variable_set('catering_footer_social_media_menu', 'menu-social-media');
+  variable_del('site_contact');
+}

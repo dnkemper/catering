@@ -1,0 +1,14 @@
+.webform-component {
+  margin-bottom: 2rem;
+
+  .form-group {
+    margin-bottom: 0;
+  }
+}
+
+.webform-container-inline {
+  > div.form-item {
+    display: inline-block;
+  }
+}
+

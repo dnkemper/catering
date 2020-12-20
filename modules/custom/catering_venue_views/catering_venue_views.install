@@ -1,0 +1,91 @@
+<?php
+/**
+ * @file
+ * Install tasks.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function catering_venue_views_install() {
+  _catering_venue_views_init();
+}
+
+/**
+ * Create venue landing page.
+ */
+function catering_venue_views_update_7100() {
+  _catering_venue_views_init();
+}
+
+/**
+ * Implements hook_update_dependencies().
+ */
+function catering_venue_views_update_dependencies() {
+  $dependencies['catering_venue_views']['7100'] = array(
+    'catering_core' => 7113,
+  );
+
+  return $dependencies;
+}
+
+/**
+ * Helper function for install and 7100 to create intial landing page.
+ */
+function _catering_venue_views_init() {
+    // Create the landing page.
+    $values = array(
+      'type' => 'landing_page',
+      'uid' => 1,
+      'status' => 1,
+      'comment' => 0,
+      'promote' => 0,
+    );
+
+    $entity = entity_create('node', $values);
+
+    $wrapper = entity_metadata_wrapper('node', $entity);
+    $wrapper->title->set('Venues');
+    $wrapper->save();
+
+    variable_set('catering_venue_views_lock_nid', $entity->nid);
+
+    // Create a menu item for the landing page.
+    $item = array(
+      'menu_name' => 'main-menu',
+      'link_title' => $entity->title,
+      'link_path' => 'node/'. $entity->nid,
+      'weight' => -46,
+    );
+
+    menu_link_save($item);
+
+    // Create a paragraph item and set the host to the landing page.
+    $paragraph = entity_create('paragraphs_item', array(
+      'field_name' => 'field_content_blocks',
+      'bundle' => 'catering_cta',
+      )
+    );
+
+    $paragraph->is_new = TRUE;
+    $paragraph->setHostEntity('node', $entity);
+    $paragraph->save();
+
+    $wrapper = entity_metadata_wrapper('paragraphs_item', $paragraph);
+
+    $body = '<h2>Iowa City/Coralville Corridor</h2><p>University Catering is available for any catering need in the Iowa City/ Coralville area, including private home events.  We provide the highest quality food, planning, decorations, and service for your wedding, receptions, conferences, meetings and private home events.  Whether you choose from a pre-existing menu or create your own with the help of our chefs, University Catering will ensure that you have a successful event.</p>';
+
+    $wrapper->field_catering_cta_body->set(array('value' => $body));
+    $wrapper->field_catering_cta_body->format->set('minimal');
+
+    $link = array(
+      'url' => '/',
+      'title' => t('Get Started'),
+      'attributes' => array(),
+    );
+
+    $wrapper->field_catering_cta->set($link);
+
+    $wrapper->save();
+}
+

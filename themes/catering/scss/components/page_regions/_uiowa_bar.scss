@@ -1,0 +1,20 @@
+#ui-wrapper {
+  box-shadow: 0px 2px 3px rgba(0,0,0,0.2);
+
+  .container-smooth {
+    position: relative;
+  }
+
+  .form-item-search-terms {
+    .form-control {
+      height: auto;
+      line-height: normal;
+      @include box-shadow(none);
+    }
+  }
+
+  #edit-submit-search {
+    width: auto;
+    padding: 4px 8px;
+  }
+}

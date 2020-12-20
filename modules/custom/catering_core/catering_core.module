@@ -1,0 +1,27 @@
+<?php
+/**
+ * @file
+ * Code for the Catering Core module.
+ */
+
+/**
+ * Implements hook_libraries_info().
+ */
+function catering_core_libraries_info() {
+  $libraries['chosen'] = array(
+    'name' => 'Chosen',
+    'vendor url' => 'https://harvesthq.github.io/chosen',
+    'download url' => 'https://github.com/harvesthq/chosen',
+    'version arguments' => array(
+      'file' => 'chosen.jquery.js',
+      'pattern' => '/Version (\d+\.+\d+)/',
+      'lines' => 5,
+    ),
+    'files' => array(
+      'css' => array('chosen.min.css'),
+      'js' => array('chosen.jquery.min.js'),
+    ),
+  );
+
+  return $libraries;
+}

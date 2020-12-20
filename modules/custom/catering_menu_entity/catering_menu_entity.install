@@ -1,0 +1,12 @@
+<?php
+/**
+ * @file
+ * Update code for the Catering Menu Entity feature.
+ */
+
+/**
+ * Add disclaimer field to menu entities.
+ */
+function catering_menu_entity_update_7100() {
+  features_revert_module('catering_menu_entity');
+}

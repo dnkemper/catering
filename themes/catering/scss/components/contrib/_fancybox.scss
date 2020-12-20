@@ -1,0 +1,8 @@
+.fancybox-skin {
+  padding: 0 !important;
+  background: transparent;
+}
+
+.fancybox-title-float-wrap .child {
+  @extend .font-smoothing-on;
+}

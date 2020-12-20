@@ -1,0 +1,16 @@
+.paragraphs-item-snp-accordion-menu-item .accordion-trigger {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: justify;
+      justify-content: space-between;
+  -ms-flex-align: center;
+      align-items: center; }
+  .paragraphs-item-snp-accordion-menu-item .accordion-trigger:hover, .paragraphs-item-snp-accordion-menu-item .accordion-trigger:focus {
+    text-decoration: none; }
+  .paragraphs-item-snp-accordion-menu-item .accordion-trigger.collapsed .accordion-indicator {
+    -ms-transform: rotate(45deg);
+        transform: rotate(45deg); }
+  .paragraphs-item-snp-accordion-menu-item .accordion-trigger .accordion-indicator {
+    transition: transform 0.3s; }
+
+/*# sourceMappingURL=snp_accordion.css.map */

@@ -1,0 +1,13 @@
+.node--example--teaser {
+  .field-name-field-page-header-featured-image {
+    img {
+      width: 100%;
+      object-fit: cover;
+      object-position: center;
+
+      .object-fit & {
+        max-height: 200px;
+      }
+    }
+  }
+}

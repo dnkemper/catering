@@ -1,0 +1,238 @@
+<?php
+/**
+ * @file
+ * Code for the Catering Commerce feature.
+ */
+
+include_once 'catering_commerce.features.inc';
+
+/**
+ * Implements hook_libraries_info().
+ */
+function catering_commerce_libraries_info() {
+    $libraries['pickadate'] = array(
+    'name' => 'Pickadate',
+    'vendor url' => 'https://github.com/amsul/pickadate.js',
+    'download url' => 'https://github.com/amsul/pickadate.js',
+    'path' => 'lib',
+    'version arguments' => array(
+      'file' => 'lib/picker.date.js',
+      'pattern' => '@v([0-9]+.[0-9]+.[0-9])@',
+      'lines' => 5,
+    ),
+    'files' => array(
+      'js' => array(
+        'compressed/picker.js',
+        'compressed/picker.date.js',
+        'compressed/picker.time.js',
+      ),
+      'css' => array(
+        'compressed/themes/default.css',
+        'compressed/themes/default.date.css',
+        'compressed/themes/default.time.css',
+      ),
+    ),
+  );
+
+  return $libraries;
+}
+
+/**
+ * Implements hook_inline_entity_form_entity_form_alter().
+ */
+function catering_commerce_inline_entity_form_entity_form_alter(&$entity_form, &$form_state) {
+  //Remove the status field from the inline entities.
+  if ($entity_form['#entity_type'] == 'commerce_product') {
+    $entity_form['status']['#access'] = FALSE;
+  }
+}
+
+/**
+ * Implements hook_commerce_line_item_summary_link_info_alter().
+ */
+function catering_commerce_commerce_line_item_summary_link_info_alter(&$links) {
+  // Alter the view cart link to edit order.
+  $links['view_cart']['title'] = "Edit order";
+}
+
+/**
+ * Implements hook_commerce_checkout_page_info().
+ */
+function catering_commerce_commerce_checkout_page_info() {
+  $checkout_pages = array();
+
+  $checkout_pages['event_info'] = array(
+    'name' => t('Event information'),
+    'title' => t('Event information'),
+    'weight' => 2,
+  );
+
+  $checkout_pages['user_info'] = array(
+    'name' => t('User information'),
+    'title' => t('User information'),
+    'weight' => 4,
+  );
+
+  return $checkout_pages;
+}
+
+/**
+ * hook_commerce_checkout_page_info_alter().
+ */
+function catering_commerce_commerce_checkout_page_info_alter(&$checkout_pages) {
+  $checkout_pages['review']['submit_value'] = "Submit order";
+}
+
+/**
+ * Implements hook_commerce_checkout_pane_info().
+ */
+function catering_commerce_commerce_checkout_pane_info() {
+  $checkout_panes = array();
+
+  $checkout_panes['student_org'] = array(
+    'title' => t('Student Organization'),
+    'file' => 'includes/catering_commerce.student_org_pane.inc',
+    'base' => 'catering_commerce_student_org_pane',
+    'page' => 'checkout',
+  );
+
+  $checkout_panes['delivery_option'] = array(
+    'title' => t('Delivery Option'),
+    'file' => 'includes/catering_commerce.delivery_option.inc',
+    'base' => 'catering_commerce_delivery_option',
+    'page' => 'checkout',
+  );
+
+  $checkout_panes['terms'] = array(
+    'title' => t('Order Terms'),
+    'file' => 'includes/catering_commerce.orderterms.inc',
+    'base' => 'catering_commerce_orderterms',
+    'page' => 'review',
+  );
+
+  return $checkout_panes;
+}
+
+/**
+ * Implements hook_commerce_checkout_pane_info_alter().
+ */
+function catering_commerce_commerce_checkout_pane_info_alter(&$checkout_panes) {
+  $checkout_panes['cart_contents']['title'] = "My order";
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function catering_commerce_form_commerce_checkout_form_event_info_alter(&$form, &$form_state, $form_id) {
+  // Get the commerce field delivery_option value.
+  $order_wrapper = entity_metadata_wrapper('commerce_order', $form_state['order']);
+  $delivery_option = $order_wrapper->field_commerce_delivery_option->value();
+  if ($delivery_option == 'pickup') {
+    $form['commerce_fieldgroup_pane__commerce_event_info']['field_commerce_time_food'][LANGUAGE_NONE][0]['value']['#title'] = 'What time do you want to pickup?';
+    $form['commerce_fieldgroup_pane__commerce_event_info']['field_commerce_time_event_end']['#access'] = FALSE;
+    $form['commerce_fieldgroup_pane__commerce_event_info']['field_commerce_on_site_contact'][LANGUAGE_NONE][0]['value']['#title'] = 'Who will be picking up the items?';
+  }
+  // States logic for field_commerce_imu_reservation.
+  $form['commerce_fieldgroup_pane__commerce_event_info']['field_commerce_imu_reservation']['#states'] = array(
+    'visible' => array(
+      ':input[name="commerce_fieldgroup_pane__commerce_event_info[field_commerce_imu][und]"]' => array('value' => '1'),
+    ),
+    'required' => array(
+      ':input[name="commerce_fieldgroup_pane__commerce_event_info[field_commerce_imu][und]"]' => array('value' => '1'),
+    ),
+  );
+
+  // Add custom element validation for field_commerce_imu_reservation.
+  $form['commerce_fieldgroup_pane__commerce_event_info']['field_commerce_imu_reservation']['#element_validate'][] = 'catering_commerce_field_commerce_imu_reservation_states_require_validate';
+
+  // States logic for field_commerce_event_location.
+  $form['commerce_fieldgroup_pane__commerce_event_info']['field_commerce_event_location']['#states'] = array(
+    'visible' => array(
+      ':input[name="commerce_fieldgroup_pane__commerce_event_info[field_commerce_imu][und]"]' => array('value' => '0'),
+    ),
+  );
+
+  // States logic for field_commerce_event_name.
+  $form['commerce_fieldgroup_pane__commerce_event_info']['field_commerce_event_name']['#states'] = array(
+    'visible' => array(
+      ':input[name="commerce_fieldgroup_pane__commerce_event_info[field_commerce_imu][und]"]' => array('value' => '0'),
+    ),
+  );
+
+  // Add pickadate.js library to event pane.
+  if (($library = libraries_detect('pickadate')) && !empty($library['installed'])) {
+    libraries_load('pickadate');
+    $form['#attached']['libraries_load'][] = array('pickadate');
+    $form['#attached']['js'][] = drupal_get_path('module', 'catering_commerce') . '/js/pickadate.stuorg.js';
+    $form['#attached']['js'][] = drupal_get_path('module', 'catering_commerce') . '/js/pickatime.stuorg.js';
+  }
+}
+
+/**
+ * Custom element validation for field_commerce_imu_reservation.
+ */
+function catering_commerce_field_commerce_imu_reservation_states_require_validate($element, $form_state) {
+  if ($element['#states']['visible'][':input[name="commerce_fieldgroup_pane__commerce_event_info[field_commerce_imu][und]"]']['value'] == $form_state['values']['commerce_fieldgroup_pane__commerce_event_info']['field_commerce_imu'][LANGUAGE_NONE][0]['value']) {
+    if ($form_state['values']['commerce_fieldgroup_pane__commerce_event_info']['field_commerce_imu_reservation'][LANGUAGE_NONE][0]['value'] == '') {
+      form_set_error('commerce_fieldgroup_pane__commerce_event_info][field_commerce_imu_reservation][und][0][value]
+', 'Reservation number is required.');
+    }
+  }
+}
+
+/**
+ * Implements hook_field_widget_form_alter().
+ */
+function catering_commerce_field_widget_form_alter(&$element, &$form_state, $context) {
+  // Use the elements module numberfield widget on the commerce expecting field.
+  if ($context['instance']['field_name'] == 'field_commerce_expecting') {
+    $element['value']['#type'] = 'numberfield';
+  }
+}
+
+/**
+ * Implements hook_commerce_order_presave().
+ */
+function catering_commerce_commerce_order_presave($order) {
+  // Get the order entity.
+  $order_wrapper = entity_metadata_wrapper('commerce_order', $order);
+  // Get the delivery option value.
+  $delivery_option = $order_wrapper->field_commerce_delivery_option->value();
+  // If it is set to delivery apply service fee.
+  if (empty($delivery_option) || $delivery_option == 'delivery') {
+    // Load commerce_fees.rules.inc.
+    module_load_include('inc', 'commerce_fees', 'commerce_fees.rules');
+    $order_wrapper = entity_metadata_wrapper('commerce_order', $order);
+    // Calculate fee amount based on order total.
+    $order_total = $order->commerce_order_total[LANGUAGE_NONE][0]['amount'];
+    $fee_amount = $order_total * 0.2;
+    // Set the fee.
+    commerce_fees_apply($order_wrapper, 'service_fee', $fee_amount, 'USD');
+    // Manually call commerce_fees_commerce_cart_order_refresh().
+    commerce_fees_commerce_cart_order_refresh($order_wrapper);
+  }
+}
+
+/**
+ * Implements hook_preprocess_page().
+ */
+function catering_commerce_preprocess_page(&$vars) {
+  $args = arg();
+  if ($args[0] == 'students' && $args[1] == 'order') {
+      $breadcrumbs = drupal_get_breadcrumb();
+      $breadcrumbs[] = l('Students', 'students');
+      drupal_set_breadcrumb($breadcrumbs);
+  }
+  if ($args[0] == 'cart') {
+      $breadcrumbs = drupal_get_breadcrumb();
+      $breadcrumbs[] = l('Students', 'students');
+      $breadcrumbs[] = l('Order', 'students/order');
+      drupal_set_breadcrumb($breadcrumbs);
+  }
+  if ($args[0] == 'checkout') {
+      $breadcrumbs = drupal_get_breadcrumb();
+      $breadcrumbs[] = l('Students', 'students');
+      $breadcrumbs[] = l('Order', 'students/order');
+      drupal_set_breadcrumb($breadcrumbs);
+  }
+}

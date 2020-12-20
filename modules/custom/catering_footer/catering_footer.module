@@ -1,0 +1,124 @@
+<?php
+
+/**
+ * @file
+ * Code for the catering_footer module.
+ */
+
+/**
+ * Implements hook_permission().
+ */
+function catering_footer_permission() {
+  return array(
+    'administer catering footer' => array(
+      'title' => t('Administer Catering Footer'),
+      'description' => t('Configure Catering footer.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function catering_footer_menu() {
+  $items = array();
+
+  $items['admin/config/user-interface/catering-footer'] = array(
+    'title' => 'Catering Footer',
+    'description' => 'Configuration for the Catering Footer',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('catering_footer_config_form'),
+    'access arguments' => array('administer catering footer'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'includes/catering_footer.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function catering_footer_theme() {
+  $themes = array(
+    'catering_footer_block' => array(
+      'path' => drupal_get_path('module', 'catering_footer') . '/theme',
+      'template' => "catering_footer_block",
+    ),
+  );
+
+  return $themes;
+}
+
+/**
+ * Implements hook_preprocess_catering_footer_block().
+ */
+function catering_footer_preprocess_catering_footer_block(&$variables) {
+  $module_path = drupal_get_path('module', 'catering_footer');
+  drupal_add_css($module_path . '/css/catering_footer.css');
+
+  // Logo.
+  $logo = base_path() . $module_path . '/images/catering.png';
+  $variables['logo'] = $logo;
+
+  // Custom menu for config form.
+  $custom_menu = variable_get('catering_footer_custom_menu');
+  if (!empty($custom_menu) && $custom_menu != 'none') {
+    $custom_menu_tree = menu_tree_all_data($custom_menu);
+    $custom_menu_output = menu_tree_output($custom_menu_tree);
+    $variables['custom_menu_links'] = render($custom_menu_output);
+  }
+
+  // Social media menu for config form.
+  $social_menu = variable_get('catering_footer_social_media_menu');
+  if (!empty($social_menu) && $social_menu != 'none') {
+    $social_menu_tree = menu_tree_all_data($social_menu);
+    $social_menu_output = menu_tree_output($social_menu_tree);
+    $variables['social_menu_links'] = render($social_menu_output);
+  }
+
+  // Contact us from config form.
+  $contact_us = variable_get('catering_footer_contact_us');
+  if (!empty($contact_us)) {
+    $variables['contact_us'] = check_markup($contact_us['value'], $contact_us['format']);
+  }
+
+  // Housing links.
+  $housing_links = array();
+  $housing_links[] = l(t('Apply'), 'https://housing.uiowa.edu/living-campus/apply');
+  $housing_links[] = l(t('Communities'), 'https://housing.uiowa.edu/communities');
+  $housing_links[] = l(t('Residence Halls'), 'https://housing.uiowa.edu/residence-halls');
+
+  // Dining links.
+  $dining_links = array();
+  $dining_links[] = l(t('Locations'), 'https://dining.uiowa.edu/locations');
+  $dining_links[] = l(t('Nutrition'), 'https://dining.uiowa.edu/nutrition');
+  $dining_links[] = l(t('Meal Plans'), 'https://dining.uiowa.edu/meal-plans');
+
+  // Catering links.
+  $catering_links = array();
+  $catering_links[] = l(t('Menus'), 'https://catering.uiowa.edu/menus');
+  $catering_links[] = l(t('Events'), 'https://catering.uiowa.edu/events');
+  $catering_links[] = l(t('Weddings'), 'https://catering.uiowa.edu/weddings');
+
+  // Block stucture for catering_site_links.
+  $catering_site_links = array();
+
+  $catering_site_links['housing'] = array(
+    'title' => l(t('Housing'), 'http://housing.uiowa.edu'),
+    'content' => theme('item_list', array('items' => $housing_links)),
+  );
+
+  $catering_site_links['dining'] = array(
+    'title' => l(t('Dining'), 'https://dining.uiowa.edu'),
+    'content' => theme('item_list', array('items' => $dining_links)),
+  );
+
+  $catering_site_links['catering'] = array(
+    'title' => l(t('Catering'), 'http://catering.uiowa.edu'),
+    'content' => theme('item_list', array('items' => $catering_links)),
+  );
+
+  // Add to variables.
+  $variables['catering_site_links'] = $catering_site_links;
+}

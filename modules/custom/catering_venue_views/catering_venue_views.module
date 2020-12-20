@@ -1,0 +1,65 @@
+<?php
+/**
+ * @file
+ * Code for the Catering Views feature.
+ */
+
+include_once 'catering_venue_views.features.inc';
+
+/**
+ * Implements hook_block_info_alter().
+ */
+function catering_venue_views_block_info_alter(&$blocks, $theme, $code_blocks) {
+  // Print the venues view on the landing page.
+  if (isset($blocks['views'], $blocks['views']['venues-venues_bef'])) {
+    if ($theme == 'catering') {
+      $nid = variable_get('catering_venue_views_lock_nid');
+
+      $blocks['views']['venues-venues_bef']['region'] = 'content';
+      $blocks['views']['venues-venues_bef']['visibility'] = 1;
+      $blocks['views']['venues-venues_bef']['status'] = 1;
+      $blocks['views']['venues-venues_bef']['pages'] = 'node/' . $nid;
+    }
+  }
+}
+
+/**
+ * Implements hook_node_access().
+ */
+function catering_venue_views_node_access($node, $op, $account) {
+  // Prevent landing page from being deleted.
+  if (!user_access('administer modules')) {
+    $nid = variable_get('catering_venue_views_lock_nid');
+
+    if (isset($node->nid) && $node->nid == $nid) {
+      if ($op == 'delete') {
+        return NODE_ACCESS_DENY;
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function catering_venue_views_form_views_exposed_form_alter(&$form, &$form_state) {
+  // Workaround, because on a Ajax-Request the url of the current panel page gets lost
+  // and "/" is used instead.
+  if (isset($form_state['view']->current_display) && 'venues_bef' == $form_state['view']->current_display && $form['#action'] = '/') {
+    // Fix action URL.
+    $form['#action'] = '/' . $_GET['q'];
+
+    $form['#attached']['js'][] = drupal_get_path('module', 'catering_venue_views') . '/js/venues.jquery.js';
+  }
+}
+
+/**
+ * Implements hook_views_ajax_data_alter().
+ */
+function catering_venue_views_views_ajax_data_alter(&$commands, $view) {
+  if ($view->current_display == 'venues_bef') {
+    unset($view->exposed_widgets);
+    $content = $view->render();
+    $commands[1]['data'] = render($content);
+  }
+}

@@ -1,0 +1,99 @@
+<?php
+/**
+ * @file
+ * Code for the Catering Product Display Entity feature.
+ */
+
+include_once 'catering_product_display_entity.features.inc';
+
+/**
+ * Implements hook_field_extra_fields().
+ */
+function catering_product_display_entity_field_extra_fields() {
+  $extra = array();
+  $extra['node']['product_display'] = array(
+    'display' => array(
+      'configure_button' => array(
+        'label' => t('Configure Button'),
+        'description' => t('Configure and select quantity button'),
+        'weight' => 0,
+      ),
+      'price_floor' => array(
+        'label' => t('Price floor'),
+        'description' => t('Determine the price floor if there are multiple product references.'),
+        'weight' => 0,
+      ),
+      'body_full' => array(
+        'label' => t('Body - full render'),
+        'description' => t('Render the full body field.'),
+        'weight' => 0,
+      ),
+    ),
+  );
+
+  return $extra;
+}
+
+/**
+ * Implements hook_node_view().
+ */
+function catering_product_display_entity_node_view($node, $view_mode, $langcode) {
+  if ($node->type == 'product_display' &&  $view_mode == 'teaser') {
+
+    // Instantiate an entity_metadata_wrapper.
+    $wrapper = entity_metadata_wrapper('node', $node);
+
+    // Add a modal_id property that we can use consistently here and in the
+    // template.
+    $node->modal_id = 'product-display-modal-' . $node->nid;
+
+    // Markup for the configure_button extra field.
+    $node->content['configure_button'] = array(
+      '#prefix' => '<button class="footer-item btn btn-default btn-primary" data-toggle="modal" data-target="#' . $node->modal_id . '">',
+      '#markup' => 'Add to cart',
+      '#suffix' => '</button>',
+    );
+
+    $prices = array();
+
+    // Get each product variation's price.
+    foreach ($wrapper->field_catering_products->getIterator() as $delta => $product_wrapper) {
+
+      $prices[] = $product_wrapper->commerce_price->value()['amount'];
+    }
+
+    // Sort prices from low to high.
+    sort($prices);
+
+    // Format the lowest price.
+    $price = "$" . substr_replace($prices[0], '.', -2, 0);
+
+    // If there are more than one price, indicate that is the case.
+    if (count($prices) > 1) {
+      $price .= '+';
+    }
+
+    $node->content['price_floor'] = array(
+      '#prefix' => '<div class="footer-item price-floor">',
+      '#markup' => $price,
+      '#suffix' => '</div>',
+    );
+
+    $full_body = $wrapper->body->value();
+    // Markup for the body_full extra field.
+    if (!empty($full_body)) {
+      $node->content['body_full'] = array(
+        '#markup' => $wrapper->body->value->value(),
+      );
+    }
+  }
+}
+
+/**
+ * Implements hook_robotstxt().
+ */
+function catering_product_display_entity_robotstxt() {
+  return array(
+    '/product-display/',
+  );
+}

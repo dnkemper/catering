@@ -1,0 +1,20 @@
+<?php
+/**
+ * @file
+ * Code for the Catering Core module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function fontawesome_menu_install() {
+  $schema = drupal_get_schema('menu_links');
+  db_add_field('menu_links', 'fa_icon', $schema['fields']['fa_icon']);
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function fontawesome_menu_uninstall() {
+  db_drop_field('menu_links', 'fa_icon');
+}

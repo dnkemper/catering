@@ -1,0 +1,32 @@
+<?php
+/**
+ * @file
+ * Code for the Catering Example Entity feature.
+ */
+
+include_once 'catering_example_entity.features.inc';
+
+/**
+ * Implements hook_preprocess_page().
+ */
+function catering_example_entity_preprocess_page(&$vars) {
+  if ($node = menu_get_object()) {
+    if ($node->type == 'example') {
+      $breadcrumbs = drupal_get_breadcrumb();
+      $results = db_select('field_data_field_example_section_examples', 'f')
+        ->fields('f', array('bundle', 'entity_id', 'field_example_section_examples_target_id'))
+        ->condition('field_example_section_examples_target_id', $node->nid, '=')
+        ->condition('bundle', 'catering_example_section', '=')
+        ->orderBy('entity_id', 'ASC')
+        ->execute()
+        ->fetchAll();
+      if (!empty($results)) {
+        // If multiple results, use the result with the smallest entity_id.
+        $item = paragraphs_item_load($results[0]->entity_id);
+        $host_entity = $item->hostEntity();
+        $breadcrumbs[] = l($host_entity->title, 'node/' . $host_entity->nid);
+      }
+      drupal_set_breadcrumb($breadcrumbs);
+    }
+  }
+}

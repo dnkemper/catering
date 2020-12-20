@@ -1,0 +1,7 @@
+name = Catering Footer
+description = Common footer functionality for UHD sites.
+core = 7.x
+package = Catering
+
+; Automatically added by Travis packaging script
+version = 7.x-4.63

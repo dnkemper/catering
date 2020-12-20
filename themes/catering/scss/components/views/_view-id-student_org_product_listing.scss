@@ -1,0 +1,66 @@
+.view-id-student_org_product_listing {
+  .views-widget-filter-field_catering_delivery_type_value {
+    text-align: center;
+    float: none;
+
+    label {
+      @extend .h3;
+      font-weight: 500;
+      margin-bottom: 5%;
+    }
+
+    .bef-select-as-links > .form-item {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+
+      .form-type-bef-link {
+        flex-basis: 45%;
+      }
+
+      .help-block {
+        flex-basis: 90%;
+        display: flex;
+        justify-content: space-around;
+        @extend .small;
+        padding-top: 2%;
+
+        ul {
+          list-style: none;
+        }
+
+        .delivery-text, .pickup-text {
+          text-align: center;
+          width: 225px;
+        }
+      }
+    }
+
+    .form-item-edit-field-catering-delivery-type-value-all {
+      display: none;
+    }
+
+    .form-type-bef-link > a {
+      @extend .btn;
+      @extend .btn-primary;
+      @extend .btn-lg;
+      margin-right: 0.5rem;
+    }
+  }
+
+  .flex-col-3 {
+    @include breakpoint(sm) {
+      display: flex;
+      flex-wrap: wrap;
+      margin: -0.75rem;
+    }
+
+    article {
+      margin: 0.75rem !important;
+      flex-grow: 0;
+      flex-shrink: 0;
+      flex-basis: calc(33% - 1.5rem);
+    }
+  }
+}

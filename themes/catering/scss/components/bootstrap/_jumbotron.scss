@@ -1,0 +1,18 @@
+.jumbotron {
+  .container-smooth & {
+    border-radius: $border-radius-large; // Only round corners at higher resolutions if contained in a container
+    padding-left:  ($grid-gutter-width / 2);
+    padding-right: ($grid-gutter-width / 2);
+  }
+
+  @media screen and (min-width: $screen-sm-min) {
+    .container-smooth & {
+      padding-left:  ($jumbotron-padding * 2);
+      padding-right: ($jumbotron-padding * 2);
+    }
+  }
+
+  &.entity-paragraphs-item {
+    margin-bottom: 0;
+  }
+}

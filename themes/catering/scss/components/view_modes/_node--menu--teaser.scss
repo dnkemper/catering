@@ -1,0 +1,15 @@
+.node--menu--teaser {
+  margin-bottom: 3rem;
+
+  .field-name-field-page-header-featured-image {
+    img {
+      width: 100%;
+      object-fit: cover;
+      object-position: center;
+
+      .object-fit & {
+        max-height: 200px;
+      }
+    }
+  }
+}

@@ -1,0 +1,17 @@
+.form-item-fa-icon .iconpicker-popover {
+  border: 1px solid #ddd;
+}
+.form-item-fa-icon .iconpicker-search {
+  box-sizing: border-box !important;
+  padding: 10px;
+  width: 100%;
+}
+.form-item-fa-icon .iconpicker .iconpicker-item.iconpicker-selected {
+  background-color: #337ab7;
+}
+.form-item-fa-icon .input-group-addon {
+  font-size: 20px;
+  margin-left: 5px;
+  position: relative;
+  top: 4px;
+}

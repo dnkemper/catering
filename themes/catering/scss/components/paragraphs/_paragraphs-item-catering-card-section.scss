@@ -1,0 +1,44 @@
+.paragraphs-item-catering-card-section {
+  flex-grow: 0;
+  flex-shrink: 0;
+
+  &.paragraph-section {
+    padding-top: 1%;
+  }
+
+  .field-name-field-cards {
+
+    @include breakpoint(sm) {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .panel-title {
+      &:before {
+        @include fa(angle-double-right);
+        position: absolute;
+        margin-right: 0;
+        margin-left: 88%;
+      }
+    }
+
+    .panel {
+      margin: 1.5rem;
+    }
+  }
+
+  &.auto .panel { flex: 300px 1 1; }
+  &.auto-bg-tan { background-color: $color-tan-light; .panel { flex: 300px 1 1; }}
+
+  &.flex-col-1 .panel { flex-basis: 100%; }
+  &.flex-col-1-tan { background-color: $color-tan-light; .panel { flex-basis: 100%; }}
+
+  &.flex-col-2 .panel { flex-basis: calc((50% - 3rem) - 2px); }
+  &.flex-col-2-tan { background-color: $color-tan-light; .panel { flex-basis: calc((50% - 3rem) - 2px); }}
+
+  &.flex-col-3 .panel { flex-basis: calc((33.3% - 3rem) - 2px) }
+  &.flex-col-3-tan { background-color: $color-tan-light; .panel { flex-basis: calc((33.3% - 3rem) - 2px) }}
+
+  &.flex-col-4 .panel { flex-basis: calc((25% - 3rem) - 2px); }
+  &.flex-col-4-tan { background-color: $color-tan-light; .panel { flex-basis: calc((25% - 3rem) - 2px); }}
+}

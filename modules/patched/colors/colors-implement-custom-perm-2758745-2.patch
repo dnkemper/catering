@@ -1,0 +1,32 @@
+diff --git a/colors.module b/colors.module
+index 0d42046..8c846b0 100644
+--- a/colors.module
++++ b/colors.module
+@@ -16,7 +16,7 @@ function colors_menu() {
+     'file path' => drupal_get_path('module', 'colors') . '/includes',
+     'page callback' => 'drupal_get_form',
+     'page arguments' => array('colors_admin_settings'),
+-    'access arguments' => array('administer site configuration'),
++    'access arguments' => array('administer colors'),
+   );
+ 
+   $items['admin/config/user-interface/colors'] = array(
+@@ -60,6 +60,18 @@ function colors_menu() {
+ }
+ 
+ /**
++ * Implements hook_permission().
++ */
++function colors_permission() {
++  return array(
++    'administer colors' => array(
++      'title' => t('Administer Colors'),
++      'description' => t('Perform administration tasks for Colors module.'),
++    ),
++  );
++}
++
++/**
+  * Implements hook_theme().
+  */
+ function colors_theme() {

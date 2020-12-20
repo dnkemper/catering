@@ -1,0 +1,170 @@
+<?php
+/**
+ * @file
+ * Code for the Catering Planning Block feature.
+ */
+
+include_once 'catering_planning_block.features.inc';
+
+/**
+ * Implements hook_permission().
+ */
+function catering_planning_block_permission() {
+  return array(
+    'administer catering planning block' => array(
+      'title' => t('Administer Catering Planning Block'),
+      'description' => t('Configure Catering planning block.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function catering_planning_block_menu() {
+  $items = array();
+
+  $items['admin/config/user-interface/catering-planning-block'] = array(
+    'title' => 'Catering Planning Block',
+    'description' => 'Configuration for catering planning block.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('catering_planning_block_config_form'),
+    'access arguments' => array('administer catering planning block'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'includes/catering_planning_block.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function catering_planning_block_block_info() {
+  $blocks['event_planning']['info']  = t('Event Planning');
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function catering_planning_block_block_view($delta = '') {
+  $block = array();
+  switch ($delta) {
+    case 'event_planning':
+      $form = drupal_get_form('event_planning_block_form');
+      $fid = variable_get('catering_planning_block_image', '');
+      if (!empty($fid)) {
+        $file = file_load($fid);
+        // Add a class based upon the showcase node id.
+        $selector = 'catering-planning-block-bg-img';
+        // Create a url to the image file needed.
+        $image_path = image_style_url('edge_to_edge_large', $file->uri);
+        drupal_add_css('.' . $selector . ' {background-image: url("' . $image_path . '");}', 'inline');
+      }
+      $markup['bg_img'] = array(
+        '#type' => 'container',
+        '#attributes' => array(
+          'class' => array(
+            'pos-abs',
+            'bg-img',
+            'catering-planning-block-bg-img'
+          ),
+        ),
+      );
+      $markup['pattern'] = array(
+        '#type' => 'container',
+        '#attributes' => array(
+          'class' => array(
+            'pos-abs',
+            'pattern-overlay',
+            'dots',
+            'opacity-4',
+          ),
+        ),
+      );
+      $markup['container'] = array(
+        '#type' => 'container',
+        '#attributes' => array(
+          'class' => array(
+            'container-smooth',
+          ),
+        ),
+      );
+      $markup['container']['form'] = $form;
+      $block['content'] = $markup;
+      break;
+
+  }
+  return $block;
+}
+
+/**
+ * Custom form for event_planning block.
+ */
+function event_planning_block_form($form, &$form_state) {
+  $form['event_planning_input'] = array(
+    '#type' => 'textfield',
+    '#title' => t("I'm planning a:"),
+    '#attributes' => array(
+      'placeholder' => 'Enter your event category',
+      'class' => array('input-lg'),
+    ),
+  );
+
+  return $form;
+}
+
+/**
+ * Implements hook_form_FORMID_alter().
+ */
+function catering_planning_block_form_taxonomy_form_term_alter(&$form, &$form_state, $form_id) {
+  // Hide the description for event_types.
+  if ($form['#vocabulary']->machine_name == 'event_types') {
+    hide($form['description']);
+  }
+}
+
+/**
+ * Build event_types demo content.
+ */
+function _catering_planning_block_demo_content() {
+  $demo_content = array(
+    'wedding' => array(
+      'Bridal Shower',
+      'Bachelor Party',
+      'Bachelorette Party',
+      'Bridal Party',
+      'Wedding Reception',
+      'Wedding',
+    ),
+    'event' => array(
+      'Anniversary',
+      'Baby Shower',
+      'Backyard BBQ',
+      'Benifit',
+      'Grand Opening',
+      "Father's Day",
+      "Mother's Day",
+    ),
+    'student' => array(
+      'Award Ceremony',
+      'Student Organization Party',
+      'Graduation Ceremony',
+      'Graduation Party',
+    ),
+  );
+
+  $vocabulary = 'event_types';
+  $vid = taxonomy_vocabulary_machine_name_load($vocabulary)->vid;
+  foreach ($demo_content as $destination => $events) {
+    foreach ($events as $name) {
+      $new_term = new stdClass();
+      $new_term->name = $name;
+      $new_term->vid = $vid;
+      $new_term->field_event_type_destination[LANGUAGE_NONE][0]['value'] = $destination;
+      taxonomy_term_save($new_term);
+    }
+  }
+}

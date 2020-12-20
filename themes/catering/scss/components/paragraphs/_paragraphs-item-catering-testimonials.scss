@@ -1,0 +1,16 @@
+.paragraphs-item-catering-testimonials {
+  padding: 0 6rem;
+  text-align: center;
+
+  .field-name-field-body {
+    @extend .large;
+    font-style: italic;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .field-name-field-testimonial-name {
+    font-weight: $fw-bold;
+  }
+}

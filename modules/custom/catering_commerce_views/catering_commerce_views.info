@@ -1,0 +1,13 @@
+name = Catering Commerce Views
+core = 7.x
+package = Catering
+version = 7.x-1.0
+dependencies[] = better_exposed_filters
+dependencies[] = catering_commerce_product_types
+dependencies[] = views
+features[ctools][] = views:views_default:3.0
+features[features_api][] = api:2
+features[views_view][] = catering_commerce_my_order_block
+features[views_view][] = student_org_product_listing
+features_exclude[dependencies][ctools] = ctools
+project path = sites/catering.uiowa.edu/modules/custom

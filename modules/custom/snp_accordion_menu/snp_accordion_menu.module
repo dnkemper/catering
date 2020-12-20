@@ -1,0 +1,76 @@
+<?php
+/**
+ * @file
+ * Code for the Sitenow Paragraphs Accordion feature.
+ */
+
+include_once 'snp_accordion_menu.features.inc';
+
+/**
+ * Implements hook_theme_registry_alter().
+ */
+function snp_accordion_menu_theme_registry_alter(&$theme_registry) {
+  if (!path_is_admin(current_path())) {
+    // Defined path to the current module.
+    $module_path = drupal_get_path('module', 'snp_accordion_menu') . '/theme';
+    // Find all .tpl.php files in this module's folder recursively.
+    $template_file_objects = drupal_find_theme_templates($theme_registry, '.tpl.php', $module_path);
+    // Iterate through all found template file objects.
+    foreach ($template_file_objects as $key => $template_file_object) {
+      // If the template has not already been overridden by a theme.
+      if (!isset($theme_registry[$key]['theme path']) || !preg_match('#/themes/#', $theme_registry[$key]['theme path'])) {
+          // Alter the theme path and template elements.
+          $theme_registry[$key]['theme path'] = $module_path;
+          $theme_registry[$key] = array_merge($theme_registry[$key], $template_file_object);
+          $theme_registry[$key]['type'] = 'module';
+      }
+    }
+  }
+}
+
+/**
+ * Implements template_preprocess_entity().
+ */
+function snp_accordion_menu_preprocess_entity(&$variables) {
+  if (!path_is_admin(current_path())) {
+    switch ($variables['elements']['#bundle']) {
+      case 'snp_accordion_menu':
+        $variables['classes_array'][] = 'panel-group';
+        // Attach CSS.
+        $variables['content']['#attached'] = array(
+          'css' => array(
+            drupal_get_path('module', 'snp_accordion_menu') . '/css/snp_accordion_menu.css',
+          ),
+        );
+        break;
+
+      case 'snp_accordion_menu_item':
+        $parent_id = db_query('SELECT entity_id
+          FROM {field_data_field_snp_accordion_menu_items}
+          WHERE field_snp_accordion_menu_items_value = :field_snp_accordion_menu_items_value', array(
+            ':field_snp_accordion_menu_items_value' => $variables['elements']['#entity']->item_id)
+        )->fetchField();
+        $parent_id = '#snp-accordion-parent-' . $parent_id;
+        $id = $variables['elements']['#entity']->item_id;
+        $id = drupal_html_id('snp-accordion-' . $id);
+        $variables['accordion_id'] = $id;
+        $variables['parent_id'] = $parent_id;
+
+        $variables['classes_array'][] = 'panel panel-default';
+        break;
+
+    }
+  }
+}
+
+/**
+ * Implements template_preprocess_paragraphs_items().
+ */
+function snp_accordion_menu_preprocess_paragraphs_items(&$variables) {
+  if (!path_is_admin(current_path())) {
+    if ($variables['element']['#field_name'] == 'field_snp_accordion_menu_items') {
+      $variables['classes_array'][] = 'panel-group';
+      $variables['attributes_array']['id'] = 'snp-accordion-parent-' . $variables['element']['#object']->item_id;
+    }
+  }
+}

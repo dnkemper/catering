@@ -1,0 +1,41 @@
+<?php
+
+/**
+ * @file
+ * Code for the Catering Paragraphs feature.
+ */
+
+include_once 'catering_paragraphs.features.inc';
+
+/**
+ * Implements hook_inline_entity_form_entity_form_alter().
+ */
+function catering_paragraphs_inline_entity_form_entity_form_alter(&$entity_form, &$form_state) {
+  // Remove the status field from the inline entities.
+  if ($entity_form['#entity_type'] == 'node') {
+    $entity_form['status']['#type'] = FALSE;
+  }
+}
+
+/**
+ * Implements hook_paragraphs_field_widget_form_alter().
+ */
+function catering_paragraphs_paragraphs_field_widget_form_alter(&$element, $form_state, $context) {
+  if (!empty($context['form']['#node']->type) && $context['form']['#node']->type == 'example') {
+    switch ($element['#bundle']) {
+      case 'catering_menu_section':
+        $element['field_menu_featured_image']['#access'] = FALSE;
+        $element['field_menu_layout']['#access'] = FALSE;
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  // Hide card section titles and body if placed in a tab.
+  if (in_array('field_tab_section_tabs', $element['#parents'], TRUE) && $element['#bundle'] == 'catering_card_section') {
+    $element['field_section_title']['#access'] = FALSE;
+    $element['field_body']['#access'] = FALSE;
+  }
+}

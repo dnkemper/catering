@@ -1,0 +1,544 @@
+<?php
+/**
+ * @file
+ * Code for the Catering webform bundle feature.
+ */
+
+include_once 'catering_webform_bundle.features.inc';
+
+/**
+ * Implements hook_webform_select_options_info().
+ */
+function catering_webform_bundle_webform_select_options_info() {
+  $items = array();
+
+  $items['venues'] = array(
+    'title' => t('Catering Venues'),
+    'options callback' => 'catering_webform_bundle_venue_options',
+  );
+
+  $items['event_types'] = array(
+    'title' => t('Catering Event Types'),
+    'options callback' => 'catering_webform_bundle_event_types_options',
+  );
+
+  return $items;
+}
+
+/**
+ * Webform options callback.
+ */
+function catering_webform_bundle_venue_options() {
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'node')
+    ->entityCondition('bundle', 'venue')
+    ->propertyCondition('status', NODE_PUBLISHED);
+
+  $result = $query->execute();
+
+  if (isset($result['node'])) {
+    $keys = array_keys($result['node']);
+    $items = entity_load('node', $keys);
+
+    $options = array();
+
+    foreach ($items as $node) {
+      $options[$node->nid] = $node->title;
+    }
+  }
+
+  return $options;
+}
+
+/**
+ * Webform options callback.
+ */
+function catering_webform_bundle_event_types_options() {
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'taxonomy_term')
+    ->entityCondition('bundle', 'event_types');
+
+  $result = $query->execute();
+
+  if (isset($result['taxonomy_term'])) {
+    $keys = array_keys($result['taxonomy_term']);
+    $items = entity_load('taxonomy_term', $keys);
+
+    $options = array();
+
+    foreach ($items as $term) {
+      $options[$term->tid] = $term->name;
+    }
+  }
+
+  return $options;
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function catering_webform_bundle_form_webform_client_form_alter(&$form, &$form_state, $form_id) {
+  $nid = variable_get('catering_webform_bundle_contact_nid');
+
+  if ($form['#node']->nid == $nid) {
+    $params = drupal_get_query_parameters();
+
+    if (isset($form['submitted'], $form['submitted']['row_4']['col_venue']['venue'])) {
+      if (isset($params['venue'])) {
+        $form['submitted']['row_4']['col_venue']['venue']['#default_value'] = $params['venue'];
+      }
+    }
+
+    if (isset($form['submitted'], $form['submitted']['event_type'])) {
+      if (isset($params['event_type'])) {
+        $form['submitted']['event_type']['#default_value'] = $params['event_type'];
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_node_access().
+ */
+function catering_webform_bundle_node_access($node, $op, $account) {
+  if (!user_access('administer modules')) {
+    $nid = variable_get('catering_webform_bundle_contact_nid');
+
+    if (isset($node->nid) && $node->nid == $nid) {
+      if ($op == 'delete') {
+        return NODE_ACCESS_DENY;
+      }
+    }
+  }
+}
+
+/**
+ * Initial setup.
+ */
+function catering_webform_bundle_generate_contact_form() {
+  if (!variable_get('catering_webform_bundle_contact_nid')) {
+    $query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'node')
+      ->entityCondition('bundle', 'webform')
+      ->propertyCondition('title', 'Contact');
+
+    $result = $query->execute();
+
+    if (!isset($result['node'])) {
+      $node = new stdClass();
+      $node->type = 'webform';
+      node_object_prepare($node);
+      $node->title = 'Contact';
+      $node->language = LANGUAGE_NONE;
+      $node->uid = 1;
+      $node->promote = 0;
+      $node->comment = 0;
+
+      $components = array (
+        1 =>
+        array (
+          'nid' => 36,
+          'cid' => '1',
+          'pid' => '0',
+          'form_key' => 'name',
+          'name' => 'Name',
+          'type' => 'textfield',
+          'value' => '',
+          'extra' =>
+          array (
+            'title_display' => 'before',
+            'description_above' => 0,
+            'private' => 0,
+            'wrapper_classes' => '',
+            'css_classes' => '',
+            'width' => '',
+            'maxlength' => '',
+            'field_prefix' => '',
+            'field_suffix' => '',
+            'disabled' => 0,
+            'unique' => 0,
+            'description' => '',
+            'placeholder' => '',
+            'attributes' =>
+            array (
+            ),
+            'analysis' => false,
+          ),
+          'required' => '1',
+          'weight' => '0',
+          'page_num' => 1,
+        ),
+        2 =>
+        array (
+          'nid' => 36,
+          'cid' => '2',
+          'pid' => '0',
+          'form_key' => 'company_department',
+          'name' => 'Company/Department',
+          'type' => 'textfield',
+          'value' => '',
+          'extra' =>
+          array (
+            'title_display' => 'before',
+            'description_above' => 0,
+            'private' => 0,
+            'wrapper_classes' => '',
+            'css_classes' => '',
+            'width' => '',
+            'maxlength' => '',
+            'field_prefix' => '',
+            'field_suffix' => '',
+            'disabled' => 0,
+            'unique' => 0,
+            'description' => '',
+            'placeholder' => '',
+            'attributes' =>
+            array (
+            ),
+            'analysis' => false,
+          ),
+          'required' => '0',
+          'weight' => '1',
+          'page_num' => 1,
+        ),
+        3 =>
+        array (
+          'nid' => 36,
+          'cid' => '3',
+          'pid' => '0',
+          'form_key' => 'email',
+          'name' => 'Email',
+          'type' => 'email',
+          'value' => '',
+          'extra' =>
+          array (
+            'title_display' => 'before',
+            'description_above' => 0,
+            'private' => 0,
+            'wrapper_classes' => '',
+            'css_classes' => '',
+            'multiple' => 0,
+            'format' => 'short',
+            'width' => '',
+            'unique' => 0,
+            'disabled' => 0,
+            'description' => '',
+            'placeholder' => '',
+            'attributes' =>
+            array (
+            ),
+            'analysis' => false,
+          ),
+          'required' => '1',
+          'weight' => '2',
+          'page_num' => 1,
+        ),
+        4 =>
+        array (
+          'nid' => 36,
+          'cid' => '4',
+          'pid' => '0',
+          'form_key' => 'phone',
+          'name' => 'Phone',
+          'type' => 'textfield',
+          'value' => '',
+          'extra' =>
+          array (
+            'title_display' => 'before',
+            'description_above' => 0,
+            'private' => 0,
+            'wrapper_classes' => '',
+            'css_classes' => '',
+            'width' => '',
+            'maxlength' => '',
+            'field_prefix' => '',
+            'field_suffix' => '',
+            'disabled' => 0,
+            'unique' => 0,
+            'description' => '',
+            'placeholder' => '',
+            'attributes' =>
+            array (
+            ),
+            'analysis' => false,
+          ),
+          'required' => '0',
+          'weight' => '3',
+          'page_num' => 1,
+        ),
+        5 =>
+        array (
+          'nid' => 36,
+          'cid' => '5',
+          'pid' => '0',
+          'form_key' => 'event_type',
+          'name' => 'Event type',
+          'type' => 'select',
+          'value' => '',
+          'extra' =>
+          array (
+            'items' => '',
+            'multiple' => 0,
+            'title_display' => 'before',
+            'description_above' => 0,
+            'private' => 0,
+            'wrapper_classes' => '',
+            'css_classes' => '',
+            'aslist' => 1,
+            'empty_option' => '',
+            'optrand' => 0,
+            'other_option' => NULL,
+            'other_text' => 'Other...',
+            'description' => '',
+            'custom_keys' => false,
+            'options_source' => 'event_types',
+            'analysis' => true,
+          ),
+          'required' => '0',
+          'weight' => '4',
+          'page_num' => 1,
+        ),
+        6 =>
+        array (
+          'nid' => 36,
+          'cid' => '6',
+          'pid' => '0',
+          'form_key' => 'event_dates',
+          'name' => 'Event date(s)',
+          'type' => 'date',
+          'value' => '',
+          'extra' =>
+          array (
+            'title_display' => 'before',
+            'description_above' => 0,
+            'private' => 0,
+            'wrapper_classes' => '',
+            'start_date' => 'today',
+            'timezone' => 'user',
+            'exclude' =>
+            array (
+            ),
+            'end_date' => '+2 years',
+            'year_textfield' => 0,
+            'datepicker' => 1,
+            'description' => '',
+            'analysis' => false,
+          ),
+          'required' => '0',
+          'weight' => '5',
+          'page_num' => 1,
+        ),
+        7 =>
+        array (
+          'nid' => 36,
+          'cid' => '7',
+          'pid' => '0',
+          'form_key' => 'event_timeframe',
+          'name' => 'Event timeframe',
+          'type' => 'textfield',
+          'value' => '',
+          'extra' =>
+          array (
+            'title_display' => 'before',
+            'description_above' => 0,
+            'private' => 0,
+            'wrapper_classes' => '',
+            'css_classes' => '',
+            'width' => '',
+            'maxlength' => '',
+            'field_prefix' => '',
+            'field_suffix' => '',
+            'disabled' => 0,
+            'unique' => 0,
+            'description' => '',
+            'placeholder' => '',
+            'attributes' =>
+            array (
+            ),
+            'analysis' => false,
+          ),
+          'required' => '0',
+          'weight' => '6',
+          'page_num' => 1,
+        ),
+        8 =>
+        array (
+          'nid' => 36,
+          'cid' => '8',
+          'pid' => '0',
+          'form_key' => 'expected_guest_count',
+          'name' => 'Expected guest count',
+          'type' => 'number',
+          'value' => '',
+          'extra' =>
+          array (
+            'title_display' => 'before',
+            'description_above' => 0,
+            'private' => 0,
+            'wrapper_classes' => '',
+            'css_classes' => '',
+            'integer' => 1,
+            'type' => 'textfield',
+            'field_prefix' => '',
+            'field_suffix' => '',
+            'disabled' => 0,
+            'unique' => 0,
+            'description' => '',
+            'attributes' =>
+            array (
+            ),
+            'analysis' => false,
+            'min' => '',
+            'max' => '',
+            'step' => '',
+            'decimals' => '',
+            'point' => '.',
+            'separator' => ',',
+            'excludezero' => 0,
+          ),
+          'required' => '0',
+          'weight' => '7',
+          'page_num' => 1,
+        ),
+        9 =>
+        array (
+          'nid' => 36,
+          'cid' => '9',
+          'pid' => '0',
+          'form_key' => 'venue',
+          'name' => 'Venue',
+          'type' => 'select',
+          'value' => '',
+          'extra' =>
+          array (
+            'items' => '',
+            'multiple' => 0,
+            'title_display' => 'before',
+            'description_above' => 0,
+            'private' => 0,
+            'wrapper_classes' => '',
+            'css_classes' => '',
+            'aslist' => 1,
+            'empty_option' => '',
+            'optrand' => 0,
+            'other_option' => NULL,
+            'other_text' => 'Other...',
+            'description' => '',
+            'custom_keys' => false,
+            'options_source' => 'venues',
+            'analysis' => true,
+          ),
+          'required' => '0',
+          'weight' => '8',
+          'page_num' => 1,
+        ),
+        10 =>
+        array (
+          'nid' => 36,
+          'cid' => '10',
+          'pid' => '0',
+          'form_key' => 'alcohol_service',
+          'name' => 'Alcohol service',
+          'type' => 'select',
+          'value' => '',
+          'extra' =>
+          array (
+            'items' => 'yes|Yes',
+            'multiple' => 0,
+            'title_display' => 'before',
+            'description_above' => 0,
+            'private' => 0,
+            'wrapper_classes' => '',
+            'css_classes' => '',
+            'aslist' => 1,
+            'empty_option' => 'No',
+            'optrand' => 0,
+            'other_option' => NULL,
+            'other_text' => 'Other...',
+            'description' => '',
+            'custom_keys' => false,
+            'options_source' => '',
+            'analysis' => true,
+          ),
+          'required' => '0',
+          'weight' => '9',
+          'page_num' => 1,
+        ),
+        11 =>
+        array (
+          'nid' => 36,
+          'cid' => '11',
+          'pid' => '0',
+          'form_key' => 'message',
+          'name' => 'Message',
+          'type' => 'textarea',
+          'value' => '',
+          'extra' =>
+          array (
+            'title_display' => 'before',
+            'description_above' => 0,
+            'private' => 0,
+            'wrapper_classes' => '',
+            'css_classes' => '',
+            'cols' => '',
+            'rows' => '',
+            'resizable' => 1,
+            'disabled' => 0,
+            'description' => '',
+            'placeholder' => '',
+            'attributes' =>
+            array (
+            ),
+            'analysis' => false,
+          ),
+          'required' => '0',
+          'weight' => '10',
+          'page_num' => 1,
+        ),
+      );
+
+      $node->webform = array(
+        'confirmation' => '',
+        'confirmation_format' => NULL,
+        'redirect_url' => '',
+        'status' => '1',
+        'block' => '0',
+        'teaser' => '0',
+        'allow_draft' => '0',
+        'auto_save' => '0',
+        'submit_notice' => '1',
+        'submit_text' => '',
+        'submit_limit' => '-1', // User can submit more than once.
+        'submit_interval' => '-1',
+        'total_submit_limit' => '-1',
+        'total_submit_interval' => '-1',
+        'record_exists' => TRUE,
+        'roles' => array(
+          0 => '1', // Anonymous user can submit this webform.
+        ),
+        'components' => $components,
+      );
+
+      node_save($node);
+
+      $node = node_load($node->nid);
+
+      $body = '<h3>Contact</h3><p>319-335-3116</p><p>hsg-catering@uiowa.edu</p><p>Nights and weekends - 319-335-2925</p><h3>Address</h3><p>154 Iowa Memorial Union</p><p>Iowa City, IA 52242</p><h3>Hours</h3><p>Monday - Friday 8am-5pm</p><p>If you plan on stopping by our office for a meeting, we suggest setting up an appointment prior to ensure your sale coordinator is available</p><h3>Catering Hours</h3><p>All day every day</p>';
+
+      $node->body[LANGUAGE_NONE][0]['value'] = $body;
+      $node->body[LANGUAGE_NONE][0]['format'] = 'filtered_html';
+      node_save($node);
+
+      variable_set('catering_webform_bundle_contact_nid', $node->nid);
+
+      $item = array(
+        'menu_name' => 'main-menu',
+        'link_title' => $node->title,
+        'link_path' => 'node/'. $node->nid,
+        'weight' => -44,
+      );
+
+      menu_link_save($item);
+    }
+  }
+}

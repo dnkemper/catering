@@ -1,0 +1,40 @@
+.paragraphs-item-catering-buffet-items {
+
+    .menu-buffet-group {
+        border-bottom: 1px solid #ccc;
+        padding: 1.5% 0%;
+
+        .field-name-field-menu-buffet-name {
+            font-size: $font-size-h3;
+            text-align: center;
+        }
+    
+        .field-name-field-body {
+            text-align: center;
+            font-size: 85%;
+            margin: 5px 0px;
+        }
+    
+        .field-name-field-menu-item-cost {
+            text-align: center;
+            font-size: $font-size-h6;
+            font-weight: $fw-semibold;
+            margin-bottom: 5px;
+        }
+    }
+    
+    .field-name-field-menu-items {
+        margin-top: 1rem;
+    }
+
+    .menu-item-title {
+        font-weight: $fw-bold;
+        text-transform: uppercase;
+        margin-left: 1.5%;
+    }
+
+    .field-name-field-menu-item-description {
+        margin-left: 4% !important;
+    }
+
+}

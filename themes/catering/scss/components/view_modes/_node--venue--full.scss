@@ -1,0 +1,38 @@
+.node--venue--full {
+  .field-name-body {
+    @extend %large;
+    margin: 2rem 0;
+  }
+
+  .group-venue-details {
+    .field {
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #eee;
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    .field-label {
+      flex: 200px 0 0;
+      @extend %tab-style-sm;
+      text-align: right;
+      padding: 1.5rem;
+    }
+    .field-items {
+      flex: 400px 1 1;
+      padding: 1.5rem;
+      border-left: 1px dotted #ddd;
+      margin: 0.5rem 0;
+    }
+    .field-item {
+      margin-bottom: 0.5rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}

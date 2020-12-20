@@ -1,0 +1,31 @@
+.view-display-id-my_order_block {
+  .table {
+    margin-bottom: 1rem;
+  }
+
+  .line-item-summary {
+    margin-bottom: 0;
+  }
+
+  .links {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    margin-top: 1rem;
+
+    li {
+      display: inline-block;
+
+      a {
+        @extend .btn;
+      }
+    }
+
+    .line-item-summary-view-cart a {
+      @extend .btn-default;
+    }
+    .line-item-summary-checkout a {
+      @extend .btn-success;
+    }
+  }
+}

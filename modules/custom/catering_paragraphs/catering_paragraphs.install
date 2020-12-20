@@ -1,0 +1,18 @@
+<?php
+/**
+ * @file
+ * Install, update and uninstall code for the Catering Paragraphs feature.
+ */
+
+/**
+ * Remove the two-col field in favor of two column container content block.
+ */
+function catering_paragraphs_update_7100() {
+  // Delete fields.
+  field_delete_field('field_menu_items_2col');
+
+  // Increase batch size for safe measure.
+  field_purge_batch(10);
+
+  features_revert_module('catering_paragraphs');
+}

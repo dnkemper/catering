@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Catering Basic Page Entity feature.
+ */
+
+include_once 'catering_page_entity.features.inc';

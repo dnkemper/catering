@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Catering Common feature.
+ */
+
+include_once 'catering_common.features.inc';

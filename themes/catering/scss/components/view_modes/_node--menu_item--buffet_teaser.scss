@@ -1,0 +1,34 @@
+.node--menu_item--buffet_teaser {
+  padding: 0.75rem 1rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  .field-name-field-menu-item-description {
+    color: #666;
+    @extend .small;
+    font-style: italic;
+    margin-left: 1rem;
+
+    p:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .field-name-field-dietary-indicators {
+    display: inline-block;
+
+    .dietary-indicator {
+      @extend .font-smoothing-on;
+      @extend .small;
+      margin-left: 0.3rem;
+      padding: 0 0.5rem 0.1rem;
+      border-radius: 5px;
+      font-style: italic;
+      position: relative;
+      top: -2px;
+      font-weight: 700;
+    }
+  }
+}

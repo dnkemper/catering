@@ -1,0 +1,43 @@
+<?php
+/**
+ * @file
+ * Code for the Catering Commerce Views feature.
+ */
+
+include_once 'catering_commerce_views.features.inc';
+
+/**
+ * Implements hook_views_default_views_alter().
+ */
+function catering_commerce_views_views_default_views_alter(&$views) {
+  // Alter only the 'commerce_cart_form' view.
+  if (array_key_exists('commerce_cart_form', $views)) {
+    // Don't include the link.
+    unset($views['commerce_cart_form']->display['default']->display_options['fields']['line_item_title']['alter']);
+  }
+}
+
+/**
+ * Implements hook_block_info_alter().
+ */
+function catering_commerce_views_block_info_alter(&$blocks, $theme, $code_blocks) {
+  // Print the shopping cart view on the students/order page.
+  if (isset($blocks['views'], $blocks['views']['b41b8ac00650aa2ccc058e322f6777e3'])) {
+    if ($theme == 'catering') {
+      $blocks['views']['b41b8ac00650aa2ccc058e322f6777e3']['region'] = 'sidebar';
+      $blocks['views']['b41b8ac00650aa2ccc058e322f6777e3']['visibility'] = 1;
+      $blocks['views']['b41b8ac00650aa2ccc058e322f6777e3']['weight'] = -15;
+      $blocks['views']['b41b8ac00650aa2ccc058e322f6777e3']['status'] = 1;
+      $blocks['views']['b41b8ac00650aa2ccc058e322f6777e3']['pages'] = 'students/order';
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORMID_alter().
+ */
+function catering_commerce_form_views_exposed_form_alter(&$form, &$form_state, $form_id) {
+  if ($form['#id'] == 'views-exposed-form-student-org-product-listing-order-form') {
+    $form['field_catering_delivery_type_value']['#options']['All'] = '';
+  }
+}

@@ -1,0 +1,43 @@
+.paragraphs-item-snp-card {
+
+    .panel-body {
+      .field-name-field-snp-card-body {
+        > ul:only-child {
+          margin: -1.5rem;
+          border-top: none;
+          border-bottom: none;
+        }
+  
+        > ul {
+          border-top: 1px solid $panel-default-border;
+          border-bottom: 1px solid $panel-default-border;
+          margin: 0 -1.5rem;
+          padding: 0;
+          list-style: none;
+  
+          > li {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid $panel-default-border;
+  
+            &:last-child {
+              border-bottom: 0;
+            }
+          }
+        }
+      }
+    }
+  
+    .field-name-field-snp-card-image {
+        min-width: 200px;
+        img {
+            width: 100%;
+            object-fit: cover;
+            object-position: center;
+    
+            .object-fit & {
+                max-height: 200px;
+                min-width: 200px;
+            }
+        }
+    } 
+}

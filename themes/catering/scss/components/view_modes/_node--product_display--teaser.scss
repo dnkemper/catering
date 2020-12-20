@@ -1,0 +1,66 @@
+.node--product_display--teaser {
+  display: flex;
+  flex-wrap: wrap;
+
+  .field-name-field-catering-delivery-type {
+    margin-bottom: 1rem;
+  }
+
+  .panel-body {
+    width: 100%;
+    @extend .small;
+
+    > h3 {
+      margin-top: 0;
+      @extend .h6;
+      font-weight: $fw-bold;
+    }
+  }
+  .panel-footer {
+    padding: 0;
+    display: flex;
+    width: 100%;
+    align-self: flex-end;
+
+    > .footer-item {
+      flex: 100px 1 1;
+      border-radius: 0px;
+    }
+
+    .price-floor {
+      padding: $padding-base-vertical $padding-base-horizontal;
+      text-align: center;
+    }
+  }
+
+  .modal {
+    .field-name-commerce-price {
+
+      .field-item {
+        text-align: center;
+        margin-bottom: 0.5rem;
+        padding-bottom: 0.5rem;
+        border: 1px dashed #ccc;
+        padding: 1rem;
+        margin-bottom: 1rem;
+      }
+    }
+
+    .commerce-add-to-cart {
+      @extend .clearfix;
+    }
+    .form-type-select {
+      float: left;
+      width: 70%;
+      margin-top: 27px;
+    }
+    .form-item-quantity {
+      float: right;
+      width: 27%;
+    }
+    .form-submit {
+      clear: both;
+      width: 100%;
+    }
+  }
+}

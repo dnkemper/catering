@@ -1,0 +1,17 @@
+.paragraphs-item-catering-example-section {
+  .field-name-field-example-section-examples {
+    margin: 0 -1.5rem;
+
+    @include breakpoint(sm) {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    > article {
+      margin: 1.5rem;
+      flex-grow: 0;
+      flex-shrink: 0;
+      flex-basis: calc(33% - 3rem);
+    }
+  }
+}

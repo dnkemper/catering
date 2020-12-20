@@ -1,0 +1,33 @@
+.paragraphs-item-snp-cards {
+
+    .field-name-field-snp-card {
+
+        @include breakpoint(sm) {
+        display: flex;
+        flex-wrap: wrap;
+        }
+
+        .panel {
+          margin: 1.5rem;
+          flex-basis: calc((33.3% - 3rem) - 2px);
+
+          .panel-heading {
+            @extend .yellow-flair;
+            
+            .panel-title {
+              &:before {
+                @include fa(angle-double-right);
+                position: absolute;
+                margin-right: 0;
+                margin-left: 88%;
+              }
+            }
+          }
+        }
+    }
+
+    &.auto .panel { flex: 300px 1 1; }
+    &.snp-card-flex-sm-2 { flex-basis: calc((50.3% - 3rem) - 2px); }
+    &.snp-card-flex-md-3 { flex-basis: calc((33.3% - 3rem) - 2px); display: block;}
+    &.snp-card-flex-lg-4, &.snp-card-flex-lg-3 { flex-basis: calc((25.3% - 3rem) - 2px) !important; display: block; }
+}

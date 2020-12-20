@@ -1,0 +1,30 @@
+<?php
+
+/**
+ * @file
+ * Install tasks.
+ */
+
+/**
+ * Delete field_venue_telephone.
+ */
+function catering_venue_bundle_update_7100() {
+  field_delete_field('field_venue_telephone');
+  field_purge_batch(10);
+}
+
+/**
+ * Delete venue link field instance.
+ */
+function catering_venue_bundle_update_7101() {
+  if ($instance = field_info_instance('node', 'field_catering_cta', 'venue')) {
+    field_delete_instance($instance);
+  }
+}
+
+/**
+ * Revert catering venue bundle.
+ */
+function catering_venue_bundle_update_7102() {
+  features_revert_module('catering_venue_bundle');
+}

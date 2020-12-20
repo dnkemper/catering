@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Catering Landing Page Entity feature.
+ */
+
+include_once 'catering_landing_page_entity.features.inc';

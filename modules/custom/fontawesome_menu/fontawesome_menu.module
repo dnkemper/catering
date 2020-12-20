@@ -1,0 +1,168 @@
+<?php
+/**
+ * @file
+ */
+
+/**
+ * Implements hook_schema_alter().
+ */
+function fontawesome_menu_schema_alter(&$schema) {
+  $schema['menu_links']['fields']['fa_icon'] = array(
+    'type' => 'text',
+    'description' => 'Font Awesome field for menus.',
+  );
+}
+
+/**
+ * Implements hook_libraries_info().
+ */
+function fontawesome_menu_libraries_info() {
+  $libraries['fontawesome'] = array(
+    'name' => 'Font Awesome',
+    'vendor url' => 'http://fontawesome.io',
+    'download url' => 'https://github.com/FortAwesome/Font-Awesome/archive/v4.7.0.zip',
+    'version arguments' => array(
+      'file' => 'css/font-awesome.css',
+      'pattern' => '/((?:\d+\.?){2,3})/',
+      'lines' => 10,
+      'cols' => 14,
+    ),
+    'files' => array(
+      'css' => array(
+        'css/font-awesome.min.css',
+      ),
+      'fonts' => array(
+        'fonts/fontawesome-webfont.eot',
+        'fonts/fontawesome-webfont.svg',
+        'fonts/fontawesome-webfont.ttf',
+        'fonts/fontawesome-webfont.woff',
+        'fonts/fontawesome-webfont.woff2',
+        'fonts/fontawesome-webfont.otf',
+      ),
+    ),
+  );
+  $libraries['fontawesome-iconpicker'] = array(
+    'name' => 'Font Awesome Icon Picker',
+    'vendor url' => 'https://itsjavi.com/fontawesome-iconpicker',
+    'download url' => 'https://github.com/itsjavi/fontawesome-iconpicker/archive/1.3.0.zip',
+    'version arguments' => array(
+      'file' => 'package.json',
+      'pattern' => '/version.*([0-9]\.[0-9]\.[0-9])/',
+      'lines' => 5,
+    ),
+    'files' => array(
+      'css' => array('dist/css/fontawesome-iconpicker.min.css'),
+      'js' => array('dist/js/fontawesome-iconpicker.min.js'),
+    ),
+  );
+
+  return $libraries;
+}
+
+/**
+ * Implements hook_menu_link_insert().
+ */
+function fontawesome_menu_menu_link_insert($link) {
+  fontawesome_menu_db_update($link);
+}
+
+/**
+ * Implements hook_menu_link_update().
+ */
+function fontawesome_menu_menu_link_update($link) {
+  fontawesome_menu_db_update($link);
+}
+
+/**
+ * Implements hook_form_FORMID_alter().
+ */
+function fontawesome_menu_form_menu_edit_item_alter(&$form, &$form_state, $form_id) {
+  $path = drupal_get_path('module', 'fontawesome_menu');
+
+  // Add fontawesome library to the menu_edit_form.
+  if (($library = libraries_detect('fontawesome')) && !empty($library['installed'])) {
+    libraries_load('fontawesome');
+    $form['#attached']['libraries_load'][] = array('fontawesome');
+  }
+  // Add fontawesome-iconpicker library to the menu_edit_form.
+  if (($library = libraries_detect('fontawesome-iconpicker')) && !empty($library['installed'])) {
+    libraries_load('fontawesome-iconpicker');
+    $form['#attached']['libraries_load'][] = array('fontawesome-iconpicker');
+    $form['#attached']['js'][] = $path . '/js/iconSelector.behavior.js';
+    $form['#attached']['css'][] = $path . '/css/fontawesome-iconpicker-overrides.css';
+  }
+
+  $form['fa_icon'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Icon'),
+    '#description' => t('The icon to be used with the menu item. Example: <em>fa-globe</em>.'),
+    '#default_value' => fontawesome_menu_get_icon($form['mlid']['#value']),
+    '#size' => 60,
+    '#maxlength' => 128,
+    '#field_suffix' => '<span class="input-group-addon"></span>',
+  );
+}
+
+/**
+ * Implements hook_theme_registry_alter().
+ */
+function fontawesome_menu_theme_registry_alter(&$theme_registry) {
+  $theme_registry['menu_link']['theme path'] = drupal_get_path('module','fontawesome_menu');
+  $theme_registry['menu_link']['function'] = 'fontawesome_menu_menu_link';
+}
+
+/**
+ * Implements theme_menu_link().
+ */
+function fontawesome_menu_menu_link($variables) {
+  $element = $variables['element'];
+  $sub_menu = '';
+
+  if (!empty($variables['element']['#original_link']['fa_icon'])) {
+    $icon = $variables['element']['#original_link']['fa_icon'];
+    $icon_markup = '<i class="fa ' . $icon . '"></i>';
+    $title = $icon_markup . ' <span class="menu-link-title">' . $element['#title'] . '</span>';
+    $element['#localized_options']['html'] = TRUE;
+  }
+  else {
+    $title = $element['#title'];
+  }
+
+  if ($element['#below']) {
+    $sub_menu = drupal_render($element['#below']);
+  }
+  $output = l($title, $element['#href'], $element['#localized_options']);
+  return '<li' . drupal_attributes($element['#attributes']) . '>' . $output . $sub_menu . "</li>\n";
+}
+
+/**
+ * Update menu_links table for the fa_icon field.
+ *
+ * @param  array $link
+ *         A menu link item array.
+ */
+function fontawesome_menu_db_update($link) {
+  if (isset($link['fa_icon'])) {
+    db_update('menu_links')
+      ->fields(array('fa_icon' => $link['fa_icon']))
+      ->condition('mlid', $link['mlid'])
+      ->execute();
+  }
+}
+
+/**
+ * Get a menu link icon.
+ *
+ * @param string $mlid
+ *        Menu link id.
+ *
+ * @return string
+ *         The icon for a given mlid.
+ */
+function fontawesome_menu_get_icon($mlid) {
+  $icon = db_query('SELECT fa_icon FROM {menu_links} WHERE mlid = :mlid', array(':mlid' => $mlid))->fetchField();
+
+  return $icon;
+}
+
+

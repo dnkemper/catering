@@ -1,0 +1,18 @@
+.paragraphs-items {
+  margin-bottom: 2rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.paragraph-section {
+  .section-header {
+    margin-bottom: 2rem;
+
+    .section-title {
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+    }
+  }
+}

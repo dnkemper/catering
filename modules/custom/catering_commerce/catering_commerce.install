@@ -1,0 +1,417 @@
+<?php
+/**
+ * @file
+ * Install code for the Catering Commerce module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function catering_commerce_install() {
+  // Add fields to catering orders.
+  // Create a student org field.
+  $field_commerce_student_org = array(
+    'field_name' => 'field_commerce_student_org',
+    'type' => 'text',
+  );
+
+  field_create_field($field_commerce_student_org);
+
+  $field_commerce_student_org_instance = array(
+    'field_name' => $field_commerce_student_org['field_name'],
+    'label' => 'Student Organization',
+    'entity_type' => 'commerce_order',
+    'bundle' => 'commerce_order',
+    'widget' => array('weight' => 4),
+  );
+
+  field_create_instance($field_commerce_student_org_instance);
+
+  // Create a date field.
+  $field_commerce_event_date = array(
+    'field_name' => 'field_commerce_event_date',
+    'type' => 'datetime',
+    'settings' => array(
+      'granularity' => array(
+        'month' => 'month',
+        'day' => 'day',
+        'year' => 'year',
+        'hour' => 0,
+        'minute' => 0,
+        'second' => 0,
+      ),
+    ),
+  );
+
+  field_create_field($field_commerce_event_date);
+
+  $field_commerce_event_date_instance = array(
+    'field_name' => $field_commerce_event_date['field_name'],
+    'label' => 'Event Date',
+    'description' => 'Enter the date of your event. If your event is longer than one day, enter the start date.',
+    'entity_type' => 'commerce_order',
+    'bundle' => 'commerce_order',
+    'settings' => array(
+      'default_value' => 'blank',
+    ),
+    'widget' => array(
+      'type' => 'date_text',
+      'weight' => 5,
+    ),
+    'required' => TRUE,
+  );
+
+  field_create_instance($field_commerce_event_date_instance);
+
+  // Create an IMU field.
+  $field_commerce_imu = array(
+    'field_name' => 'field_commerce_imu',
+    'type' => 'list_text',
+    'settings' => array(
+      'allowed_values' => array(
+        1 => 'Yes',
+        0 => 'No',
+      ),
+    ),
+  );
+
+  field_create_field($field_commerce_imu);
+
+  $field_commerce_imu_instance = array(
+    'field_name' => $field_commerce_imu['field_name'],
+    'label' => 'Iowa Memorial Union',
+    'entity_type' => 'commerce_order',
+    'bundle' => 'commerce_order',
+    'widget' => array('weight' => 7),
+    'required' => TRUE,
+  );
+
+  field_create_instance($field_commerce_imu_instance);
+
+  // Create an IMU reservation field.
+  $field_commerce_imu_reservation = array(
+    'field_name' => 'field_commerce_imu_reservation',
+    'type' => 'number_integer',
+  );
+
+  field_create_field($field_commerce_imu_reservation);
+
+  $field_commerce_imu_reservation_instance = array(
+    'field_name' => $field_commerce_imu_reservation['field_name'],
+    'label' => 'Reservation number',
+    'description' => 'If you don’t have a reservation yet please contact IMU Event Services at <a href="tel:319-335-3114">(319)-335-3114</a> or email at <a href="mailto:imu-eventservices@iowa.edu:>imu-eventservices@iowa.edu</a> to reserve a room.',
+    'entity_type' => 'commerce_order',
+    'bundle' => 'commerce_order',
+    'widget' => array('weight' => 10),
+  );
+
+  field_create_instance($field_commerce_imu_reservation_instance);
+
+  // Create an event location field.
+  $field_commerce_event_location = array(
+    'field_name' => 'field_commerce_event_location',
+    'type' => 'text',
+  );
+
+  field_create_field($field_commerce_event_location);
+
+  $field_commerce_event_location_instance = array(
+    'field_name' => $field_commerce_event_location['field_name'],
+    'label' => 'Where will your event be held?',
+    'description' => 'Building and room number.',
+    'entity_type' => 'commerce_order',
+    'bundle' => 'commerce_order',
+    'widget' => array('weight' => 15),
+  );
+
+  field_create_instance($field_commerce_event_location_instance);
+
+  // Create a event name field.
+  $field_commerce_event_name = array(
+    'field_name' => 'field_commerce_event_name',
+    'type' => 'text',
+  );
+
+  field_create_field($field_commerce_event_name);
+
+  $field_commerce_event_name_instance = array(
+    'field_name' => $field_commerce_event_name['field_name'],
+    'label' => 'What is the name of the event you are hosting?',
+    'entity_type' => 'commerce_order',
+    'bundle' => 'commerce_order',
+    'widget' => array('weight' => 20),
+  );
+  field_create_instance($field_commerce_event_name_instance);
+
+  // Create a time food field.
+  $field_commerce_time_food = array(
+    'field_name' => 'field_commerce_time_food',
+    'type' => 'text',
+  );
+
+  field_create_field($field_commerce_time_food);
+
+  $field_commerce_time_food_instance = array(
+    'field_name' => $field_commerce_time_food['field_name'],
+    'label' => 'What time do you want the food delivered to the room?',
+    'entity_type' => 'commerce_order',
+    'bundle' => 'commerce_order',
+    'widget' => array('weight' => 25),
+  );
+  field_create_instance($field_commerce_time_food_instance);
+
+  // Create a expecting field.
+  $field_commerce_expecting = array(
+    'field_name' => 'field_commerce_expecting',
+    'type' => 'number_integer',
+  );
+
+  field_create_field($field_commerce_expecting);
+
+  $field_commerce_expecting_instance = array(
+    'field_name' => $field_commerce_expecting['field_name'],
+    'label' => 'How many people are you expecting?',
+    'entity_type' => 'commerce_order',
+    'bundle' => 'commerce_order',
+    'widget' => array('weight' => 30),
+    'required' => TRUE,
+  );
+
+  field_create_instance($field_commerce_expecting_instance);
+
+  // Create a time end field.
+  $field_commerce_time_event_end = array(
+    'field_name' => 'field_commerce_time_event_end',
+    'type' => 'text',
+  );
+
+  field_create_field($field_commerce_time_event_end);
+
+  $field_commerce_time_event_end_instance = array(
+    'field_name' => $field_commerce_time_event_end['field_name'],
+    'label' => 'What time does your event end?',
+    'entity_type' => 'commerce_order',
+    'bundle' => 'commerce_order',
+    'widget' => array('weight' => 35),
+  );
+
+  field_create_instance($field_commerce_time_event_end_instance);
+
+  // Create an on-site contact field.
+  $field_commerce_on_site_contact = array(
+    'field_name' => 'field_commerce_on_site_contact',
+    'type' => 'text',
+  );
+
+  field_create_field($field_commerce_on_site_contact);
+
+  $field_commerce_on_site_contact_instance = array(
+    'field_name' => $field_commerce_on_site_contact['field_name'],
+    'label' => 'Who is the on-site contact from your organization during the event?',
+    'entity_type' => 'commerce_order',
+    'bundle' => 'commerce_order',
+    'widget' => array('weight' => 40),
+    'required' => TRUE,
+  );
+
+  field_create_instance($field_commerce_on_site_contact_instance);
+
+  // Create a comment field.
+  $field_commerce_comments = array(
+    'field_name' => 'field_commerce_comments',
+    'type' => 'text_long',
+  );
+
+  field_create_field($field_commerce_comments);
+
+  $field_commerce_comments_instance = array(
+    'field_name' => $field_commerce_comments['field_name'],
+    'label' => 'Additional comments or questions',
+    'entity_type' => 'commerce_order',
+    'bundle' => 'commerce_order',
+    'widget' => array('weight' => 45),
+  );
+
+  field_create_instance($field_commerce_comments_instance);
+
+  // Create a name field.
+  $field_commerce_billing_name = array(
+    'field_name' => 'field_commerce_billing_name',
+    'type' => 'text',
+  );
+
+  field_create_field($field_commerce_billing_name);
+
+  $field_commerce_billing_name_instance = array(
+    'field_name' => $field_commerce_billing_name['field_name'],
+    'label' => 'Name',
+    'entity_type' => 'commerce_order',
+    'bundle' => 'commerce_order',
+    'widget' => array('weight' => 50),
+    'required' => TRUE,
+  );
+
+  field_create_instance($field_commerce_billing_name_instance);
+
+  // Create an email field.
+  $field_commerce_billing_email = array(
+    'field_name' => 'field_commerce_billing_email',
+    'type' => 'email',
+  );
+
+  field_create_field($field_commerce_billing_email);
+
+  $field_commerce_billing_email_instance = array(
+    'field_name' => $field_commerce_billing_email['field_name'],
+    'label' => 'Email',
+    'entity_type' => 'commerce_order',
+    'bundle' => 'commerce_order',
+    'widget' => array('weight' => 55),
+    'required' => TRUE,
+  );
+
+  field_create_instance($field_commerce_billing_email_instance);
+
+
+    // Create a telephone field.
+  $field_commerce_billing_phone = array(
+    'field_name' => 'field_commerce_billing_phone',
+    'type' => 'telephone',
+  );
+
+  field_create_field($field_commerce_billing_phone);
+
+  $field_commerce_billing_phone_instance = array(
+    'field_name' => $field_commerce_billing_phone['field_name'],
+    'label' => 'Phone',
+    'entity_type' => 'commerce_order',
+    'bundle' => 'commerce_order',
+    'widget' => array('weight' => 55),
+    'required' => TRUE,
+  );
+
+  field_create_instance($field_commerce_billing_phone_instance);
+
+  // Add Event Information field_group.
+  $group_name = 'commerce_event_info';
+  $entity_type = 'commerce_order';
+  $bundle = 'commerce_order';
+  $mode = 'form';
+  if (!field_group_exists($group_name, $entity_type, $bundle, $mode)) {
+    $group = (object) array(
+      'identifier' => $group_name .'|'. $entity_type .'|'. $bundle .'|'. $mode,
+      'group_name' => $group_name,
+      'entity_type' => $entity_type,
+      'bundle' => $bundle,
+      'mode' => $mode,
+      'label' => 'Event Information',
+      'weight' => '1',
+      'children' => array(
+        'field_commerce_event_date',
+        'field_commerce_imu',
+        'field_commerce_imu_reservation',
+        'field_commerce_event_location',
+        'field_commerce_event_name',
+        'field_commerce_time_food',
+        'field_commerce_expecting',
+        'field_commerce_time_event_end',
+        'field_commerce_on_site_contact',
+        'field_commerce_comments',
+      ),
+      'format_type' => 'fieldset',
+      'format_settings' => array(
+        'formatter' => 'collapsible',
+        'instance_settings' => array(
+          'description' => '',
+          'classes' => '',
+          'required_fields' => 1,
+        ),
+      ),
+    );
+    field_group_group_save($group);
+  }
+
+  // Add User Information field_group.
+  $group_name = 'commerce_user_info';
+  $entity_type = 'commerce_order';
+  $bundle = 'commerce_order';
+  $mode = 'form';
+  if (!field_group_exists($group_name, $entity_type, $bundle, $mode)) {
+    $group = (object) array(
+      'identifier' => $group_name .'|'. $entity_type .'|'. $bundle .'|'. $mode,
+      'group_name' => $group_name,
+      'entity_type' => $entity_type,
+      'bundle' => $bundle,
+      'mode' => $mode,
+      'label' => 'User Information',
+      'weight' => '1',
+      'children' => array(
+        'field_commerce_billing_name',
+        'field_commerce_billing_email',
+        'field_commerce_billing_phone',
+      ),
+      'format_type' => 'fieldset',
+      'format_settings' => array(
+        'formatter' => 'collapsible',
+        'instance_settings' => array(
+          'description' => '',
+          'classes' => '',
+          'required_fields' => 1,
+        ),
+      ),
+    );
+    field_group_group_save($group);
+  }
+
+  // Grant Anonymous users the access checkout permission.
+  user_role_grant_permissions(DRUPAL_ANONYMOUS_RID, array('access checkout'));
+  // Grant Authenticated users the access checkout permission.
+  user_role_grant_permissions(DRUPAL_AUTHENTICATED_RID, array('access checkout'));
+
+  drupal_flush_all_caches();
+
+  // Disable rules we don't need and rules that we've cloned.
+  $rules = array(
+    'commerce_checkout_new_account',
+    'commerce_checkout_order_convert',
+    'commerce_checkout_new_account',
+    'commerce_checkout_order_email',
+  );
+
+  $rules_config = rules_config_load_multiple($rules);
+
+  foreach ($rules_config as $rule) {
+    $rule->active = FALSE;
+    $rule->save();
+  }
+}
+
+/**
+ * Implements create delivery option field().
+ */
+function catering_commerce_update_7101() {
+  // Add fields to catering orders.
+  // Create a delivery option field.
+  $field_commerce_delivery_option = array(
+    'field_name' => 'field_commerce_delivery_option',
+    'type' => 'list_text',
+    'settings' => array(
+      'allowed_values' => array(
+        'delivery'=> 'Delivery',
+        'pickup' => 'Pickup',
+      ),
+    ),
+  );
+
+  field_create_field($field_commerce_delivery_option);
+
+  $field_commerce_delivery_option_instance = array(
+    'field_name' => $field_commerce_delivery_option['field_name'],
+    'label' => 'Delivery Option',
+    'entity_type' => 'commerce_order',
+    'bundle' => 'commerce_order',
+    'widget' => array('weight' => 4),
+  );
+
+  field_create_instance($field_commerce_delivery_option_instance);
+}

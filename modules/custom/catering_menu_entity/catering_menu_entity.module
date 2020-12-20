@@ -1,0 +1,43 @@
+<?php
+/**
+ * @file
+ * Code for the Catering Menu Entity feature.
+ */
+
+include_once 'catering_menu_entity.features.inc';
+
+/**
+ * Implements hook_expire_cache_alter().
+ */
+function catering_menu_entity_expire_cache_alter(&$urls, $object_type, $object, $absolute_urls_passed) {
+  if ($object_type == 'node' && $object->nid == 31) {
+    // Create an EFQ for all menu nodes.
+    $query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'node')
+      ->entityCondition('bundle', 'menu');
+    $result = $query->execute();
+
+    $nids = array_keys($result['node']);
+
+    foreach ($nids as $key => $node) {
+      // Add each node/nid to the $urls array.
+      $urls['node-' . $node] = 'node/' . $node;
+    }
+  }
+}
+
+/**
+ * Implements hook_block_info_alter().
+ */
+function catering_menu_entity_block_info_alter(&$blocks, $theme, $code_blocks) {
+  // Print the menus_teaser_block on menus page.
+  if (isset($blocks['views'], $blocks['views']['menus-menus_teaser_block'])) {
+    if ($theme == 'catering') {
+      $blocks['views']['menus-menus_teaser_block']['region'] = 'content';
+      $blocks['views']['menus-menus_teaser_block']['visibility'] = 1;
+      $blocks['views']['menus-menus_teaser_block']['weight'] = 0;
+      $blocks['views']['menus-menus_teaser_block']['status'] = 1;
+      $blocks['views']['menus-menus_teaser_block']['pages'] = 'menus';
+    }
+  }
+}

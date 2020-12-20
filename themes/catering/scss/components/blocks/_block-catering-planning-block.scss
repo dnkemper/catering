@@ -1,0 +1,27 @@
+
+.block-catering-planning-block,
+.pane-catering-planning-block-event-planning {
+  position: relative;
+  padding: 3rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @include breakpoint(sm) {
+    min-height: 400px;
+  }
+
+  .bg-img {
+    background-color: #333;
+  }
+
+  #event-planning-block-form {
+    position: relative;
+
+    label {
+      color: #fff;
+      @extend .font-smoothing-on;
+      text-transform: uppercase;
+    }
+  }
+}

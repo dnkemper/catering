@@ -1,0 +1,42 @@
+.header {
+  margin: 0;
+  padding: 2rem 0;
+  background-color: $color-tan-light;
+  position: relative;
+  border-bottom: none;
+
+  .header-navbar {
+    @include breakpoint(md) {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
+  .navbar-branding {
+    text-transform: uppercase;
+    color: $text-color;
+
+    &:hover,
+    &:focus {
+      text-decoration: none;
+    }
+
+    .site-name {
+      font-weight: $fw-black;
+      font-size: 4rem;
+      line-height: 0.8;
+    }
+
+    .site-slogan {
+      font-size: 1.3rem;
+      letter-spacing: 2px;
+    }
+  }
+
+  .region-main-nav {
+    .block__title {
+      @extend .sr-only
+    }
+  }
+}
